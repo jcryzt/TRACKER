@@ -26,6 +26,27 @@ _bd = _base_dir()
 if _bd not in sys.path:
     sys.path.insert(0, _bd)
 
+# ── Logging: arquivo ao lado do exe (sem console quando frozen) ───────────────
+_log_file = os.path.join(_bd, 'tracker.log')
+_handlers = [logging.FileHandler(_log_file, encoding='utf-8')]
+if not getattr(sys, 'frozen', False):
+    _handlers.append(logging.StreamHandler())
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s — %(message)s",
+    handlers=_handlers,
+)
+
+def _fatal(msg: str):
+    """Exibe mensagem de erro visível mesmo sem console e encerra."""
+    logging.critical(msg)
+    try:
+        import ctypes
+        ctypes.windll.user32.MessageBoxW(0, msg, "Tracker — Erro Fatal", 0x10)
+    except Exception:
+        pass
+    sys.exit(1)
+
 try:
     from config import (
         AAD_CLIENT_ID as _AAD_CLIENT_ID,
@@ -35,13 +56,13 @@ try:
         PORT, HOST,
     )
 except ImportError:
-    raise SystemExit(
-        "\n[TRACKER] config.py não encontrado.\n"
-        "Copie config.example.py → config.py e preencha os valores.\n"
-        f"Caminho esperado: {os.path.join(_bd, 'config.py')}\n"
+    _fatal(
+        "config.py não encontrado.\n\n"
+        "Copie config.example.py → config.py e preencha os valores.\n\n"
+        f"Caminho esperado:\n{os.path.join(_bd, 'config.py')}"
     )
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s — %(message)s")
+except Exception as e:
+    _fatal(f"Erro ao carregar config.py:\n{e}")
 
 app = Flask(__name__,
     template_folder=os.path.join(_resource_dir(), 'templates'),
@@ -868,7 +889,7 @@ def restaurar_seed(name):
         extras = [i for i in data_atual.get('items',[]) if i.get('status') in STATUS_PENDENTES and i['id'] not in snap_ids]
         snap.setdefault('items',[]).extend(extras)
     save_data(snap)
-    return jsonify({'ok':True,'backup':bak_filename})
+    return jsonify({'ok':True,'backup':bak_filename,'restored':True})
 
 @app.route('/api/seeds/fechar', methods=['POST'])
 def fechar_projeto():
@@ -876,3 +897,27 @@ def fechar_projeto():
     if err: return err
     body = request.json or {}
     name = body.get('name', seed_name_auto()).strip().upper()
+    levar_inacab = body.get('levar_inacabados', True)
+    data = data_req
+    snap = json.loads(json.dumps(data))
+    snap['_meta'] = {'name':name,'created_at':datetime.now().strftime('%d/%m/%Y %H:%M')}
+    filename = safe_seed_filename(name)
+    ok, _ = sp_put_json(f'{SP_SEEDS}/{filename}', snap)
+    if not ok:
+        with open(os.path.join(SEED_DIR, filename), 'w', encoding='utf-8') as f:
+            json.dump(snap, f, ensure_ascii=False, indent=2)
+    data["items"] = [i for i in data["items"] if i.get("status") in STATUS_PENDENTES] if levar_inacab else []
+    save_data(data)
+    return jsonify({"ok":True,"name":name,"n_levados":len(data["items"])})
+
+
+@app.route("/api/shutdown", methods=["POST"])
+def shutdown_server():
+    import signal
+    threading.Timer(0.3, lambda: os.kill(os.getpid(), signal.SIGTERM)).start()
+    return jsonify({"ok": True, "msg": "Servidor encerrando..."})
+
+if __name__ == '__main__':
+    threading.Timer(1.2, lambda: webbrowser.open(f'http://localhost:{PORT}')).start()
+    print(f'\n🚀 Tracker V3.6 iniciando em http://localhost:{PORT}\n')
+    app.run(host=HOST, port=PORT, debug=False)

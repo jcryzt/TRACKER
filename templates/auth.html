@@ -69,6 +69,7 @@
       display: flex;
       gap: 7px;
       margin-bottom: 1.2rem;
+      align-items: center;
     }
 
     .copy-input {
@@ -218,17 +219,36 @@
 
     function copiar(id, btn) {
       var el = document.getElementById(id);
-      navigator.clipboard.writeText(el.value).then(function() {
+      var texto = el.value;
+
+      function sucesso() {
         btn.textContent = 'Copiado!';
         btn.classList.add('copied');
         setTimeout(function() {
           btn.textContent = 'Copiar';
           btn.classList.remove('copied');
         }, 2000);
-      }).catch(function() {
-        el.select();
-        document.execCommand('copy');
-      });
+      }
+
+      // Tenta clipboard API moderna
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(sucesso).catch(function() {
+          fallbackCopy(texto, sucesso);
+        });
+      } else {
+        fallbackCopy(texto, sucesso);
+      }
+    }
+
+    function fallbackCopy(texto, cb) {
+      var ta = document.createElement('textarea');
+      ta.value = texto;
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try { document.execCommand('copy'); cb(); } catch(e) {}
+      document.body.removeChild(ta);
     }
 
     function setStatus(msg, cls) {
@@ -237,15 +257,20 @@
       el.className = 'status ' + (cls || '');
     }
 
+    function abrirTracker() {
+      clearInterval(_pollTimer);
+      activateStep(3);
+      setStatus('✓ Login confirmado! Abrindo Tracker...', 'ok');
+      setTimeout(function() { window.location.href = '/'; }, 300);
+    }
+
     function verificarLogin() {
       setStatus('Verificando...', 'wait');
       fetch('/sharepoint-status')
         .then(function(r) { return r.json(); })
         .then(function(d) {
           if (d.ok) {
-            setStatus('✓ Login confirmado! Redirecionando...', 'ok');
-            activateStep(3);
-            setTimeout(function() { window.location.href = '/'; }, 1200);
+            abrirTracker();
           } else {
             setStatus('Login ainda não concluído. Termine a autenticação no navegador e tente novamente.', 'err');
           }
@@ -253,16 +278,20 @@
         .catch(function() { setStatus('Erro ao verificar. Tente novamente.', 'err'); });
     }
 
-    // Polling automático a cada 5s
+    // Polling automático a cada 2s
     var _pollTimer = setInterval(function() {
       fetch('/sharepoint-status')
         .then(function(r) { return r.json(); })
         .then(function(d) {
           if (d.ok) {
+            abrirTracker();
+          } else if (d.mensagem && d.mensagem.indexOf('Erro') === 0) {
             clearInterval(_pollTimer);
-            setStatus('✓ Login confirmado! Redirecionando...', 'ok');
-            activateStep(3);
-            setTimeout(function() { window.location.href = '/'; }, 1200);
-          } else if (d.status === 'error') {
-            clearInterval(_pollTimer);
-            setStatus('Erro: ' + (d.m
+            setStatus('Erro: ' + d.mensagem, 'err');
+          }
+        })
+        .catch(function() {});
+    }, 2000);
+  </script>
+</body>
+</html>

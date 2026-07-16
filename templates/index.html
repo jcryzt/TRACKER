@@ -521,6 +521,12 @@ svg#fc-svg{display:block;min-width:1400px;min-height:700px;background:var(--bg2)
       <div id="db-specialists" class="db-specialists"></div>
     </div>
     <div class="db-section">
+      <div class="db-section-hdr">Cobertura por Categoria (Concluídos)</div>
+      <div style="display:flex;justify-content:center;align-items:center;padding:16px 0">
+        <canvas id="db-radar" width="380" height="380" style="max-width:380px"></canvas>
+      </div>
+    </div>
+    <div class="db-section">
       <div class="db-section-hdr">Principais Demandas Abertas</div>
       <div id="db-critical" class="db-critical"></div>
     </div>
@@ -645,6 +651,7 @@ svg#fc-svg{display:block;min-width:1400px;min-height:700px;background:var(--bg2)
     </div>
   </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 // ── STATE ─────────────────────────────────────────────────────────────────────
 var _items=[],_projects=[],_versions=[],_fcs=[],_mapaCards=[];
@@ -1599,6 +1606,71 @@ function renderDash(){
     });
   }
   document.getElementById('db-critical').innerHTML = critHtml;
+
+  // ── Radar: concluídos por categoria ──────────────────────────────────────────
+  var concluidos = _items.filter(function(i){ return i.status === 'concluido'; });
+  var radarData  = CATS.map(function(cat){
+    return concluidos.filter(function(i){ return i.categoria === cat; }).length;
+  });
+  var maxVal = Math.max.apply(null, radarData.concat([1]));
+
+  var canvas = document.getElementById('db-radar');
+  if(!canvas) return;
+
+  if(window._radarChart) { window._radarChart.destroy(); }
+
+  if(typeof Chart === 'undefined') return;
+
+  window._radarChart = new Chart(canvas, {
+    type: 'radar',
+    data: {
+      labels: CATS,
+      datasets: [{
+        label: 'Concluídos',
+        data: radarData,
+        backgroundColor: 'rgba(34,211,238,0.15)',
+        borderColor: 'rgba(34,211,238,0.9)',
+        borderWidth: 2,
+        pointBackgroundColor: CATS.map(function(c){ return CAT_COLOR[c]||'#22d3ee'; }),
+        pointBorderColor: '#0d1117',
+        pointRadius: 5,
+        pointHoverRadius: 7,
+      }]
+    },
+    options: {
+      responsive: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(ctx){
+              return ' ' + ctx.parsed.r + ' concluído' + (ctx.parsed.r !== 1 ? 's' : '');
+            }
+          }
+        }
+      },
+      scales: {
+        r: {
+          min: 0,
+          max: maxVal,
+          ticks: {
+            stepSize: Math.max(1, Math.ceil(maxVal / 4)),
+            color: 'rgba(100,116,139,0.8)',
+            backdropColor: 'transparent',
+            font: { size: 9 }
+          },
+          grid:        { color: 'rgba(30,45,61,0.9)' },
+          angleLines:  { color: 'rgba(30,45,61,0.9)' },
+          pointLabels: {
+            color: function(ctx){
+              return CAT_COLOR[CATS[ctx.index]] || '#94a3b8';
+            },
+            font: { size: 11, weight: '700' }
+          }
+        }
+      }
+    }
+  });
 }
 
 
@@ -1940,48 +2012,3 @@ border-radius:7px;color:var(--text);padding:6px 10px;font-size:12px"></select>
     <div class="fr">
       <label>Texto do nó</label>
       <input type="text" id="fc-label-input" placeholder="Rótulo do nó..." maxlength="80" onkeydown="if(event.key==='Enter')saveLabelEdit()" style="font-size:15px">
-    </div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeLabelModal()">Cancelar</button>
-      <button class="btn-ok" onclick="saveLabelEdit()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<div class="ov hide" id="ov-users" onclick="if(event.target===this)closeUsersModal()">
-  <div class="modal" style="max-width:560px">
-    <h2>👥 Gerenciar Usuários</h2>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Usuários que já fizeram login. Apenas admins podem alterar papéis.</p>
-    <div id="users-list" style="display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto"></div>
-    <div class="modal-btns" style="margin-top:16px">
-      <button class="btn-cancel" onclick="closeUsersModal()">Fechar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ CONTACTS MODAL ══════════════════════════════════════════════════ -->
-<div class="ov hide" id="ov-contacts" onclick="if(event.target===this)closeContactModal()">
-  <div class="modal" style="max-width:560px">
-    <h2>👥 Contatos</h2>
-    <div id="contacts-list" style="max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:14px"></div>
-    <div style="border-top:1px solid var(--border);padding-top:14px">
-      <div style="font-size:11px;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px" id="ct-form-title">Novo Contato</div>
-      <input type="hidden" id="ct-id">
-      <div class="fr fr2">
-        <div><label>Nome *</label><input type="text" id="ct-nome" placeholder="Nome completo"></div>
-        <div><label>Empresa</label><input type="text" id="ct-empresa" placeholder="Empresa / área"></div>
-      </div>
-      <div class="fr fr2">
-        <div><label>Cargo</label><input type="text" id="ct-cargo" placeholder="Cargo ou função"></div>
-        <div><label>Telefone / WhatsApp</label><input type="text" id="ct-telefone" placeholder="11 99999-9999"></div>
-      </div>
-      <div class="fr"><label>E-mail</label><input type="text" id="ct-email" placeholder="email@empresa.com"></div>
-    </div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="ctCancelEdit()">Cancelar</button>
-      <button class="btn-ok" onclick="ctSave()">Salvar Contato</button>
-    </div>
-  </div>
-</div>
-</body>
-</html>
