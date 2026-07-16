@@ -1,8 +1,30 @@
 from flask import Flask, jsonify, request, render_template, send_file as sf, redirect
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-import json, uuid, os, subprocess, threading, webbrowser, time, logging
+import json, uuid, os, sys, subprocess, threading, webbrowser, time, logging
 from datetime import datetime, timezone, timedelta
+
+# ── PyInstaller compatibility ─────────────────────────────────────────────────
+def _base_dir():
+    """Diretório onde ficam os dados (config.py, tracker_data.json, seeds/).
+    Quando frozen (.exe): diretório do executável.
+    Quando script: diretório do app.py."""
+    if getattr(sys, 'frozen', False):
+        return os.path.dirname(sys.executable)
+    return os.path.dirname(os.path.abspath(__file__))
+
+def _resource_dir():
+    """Diretório onde ficam os recursos empacotados (templates/, static/).
+    Quando frozen: sys._MEIPASS (pasta temporária do PyInstaller).
+    Quando script: diretório do app.py."""
+    if getattr(sys, 'frozen', False):
+        return sys._MEIPASS
+    return os.path.dirname(os.path.abspath(__file__))
+
+# Garante que config.py ao lado do .exe seja importável
+_bd = _base_dir()
+if _bd not in sys.path:
+    sys.path.insert(0, _bd)
 
 try:
     from config import (
@@ -16,11 +38,15 @@ except ImportError:
     raise SystemExit(
         "\n[TRACKER] config.py não encontrado.\n"
         "Copie config.example.py → config.py e preencha os valores.\n"
+        f"Caminho esperado: {os.path.join(_bd, 'config.py')}\n"
     )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s — %(message)s")
 
-app = Flask(__name__)
+app = Flask(__name__,
+    template_folder=os.path.join(_resource_dir(), 'templates'),
+    static_folder=os.path.join(_resource_dir(), 'static'),
+)
 limiter = Limiter(
     key_func=get_remote_address,
     app=app,
@@ -28,7 +54,7 @@ limiter = Limiter(
     storage_uri="memory://",
 )
 
-BASE_DIR  = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR  = _base_dir()
 DATA_FILE = os.path.join(BASE_DIR, 'tracker_data.json')
 SEED_DIR  = os.path.join(BASE_DIR, 'seeds')
 os.makedirs(SEED_DIR, exist_ok=True)
@@ -850,27 +876,3 @@ def fechar_projeto():
     if err: return err
     body = request.json or {}
     name = body.get('name', seed_name_auto()).strip().upper()
-    levar_inacab = body.get('levar_inacabados', True)
-    data = data_req
-    snap = json.loads(json.dumps(data))
-    snap['_meta'] = {'name':name,'created_at':datetime.now().strftime('%d/%m/%Y %H:%M')}
-    filename = safe_seed_filename(name)
-    ok, _ = sp_put_json(f'{SP_SEEDS}/{filename}', snap)
-    if not ok:
-        with open(os.path.join(SEED_DIR, filename), 'w', encoding='utf-8') as f:
-            json.dump(snap, f, ensure_ascii=False, indent=2)
-    data['items'] = [i for i in data['items'] if i.get('status') in STATUS_PENDENTES] if levar_inacab else []
-    save_data(data)
-    return jsonify({'ok':True,'name':name,'n_levados':len(data['items'])})
-
-
-@app.route('/api/shutdown', methods=['POST'])
-def shutdown_server():
-    import signal
-    threading.Timer(0.3, lambda: os.kill(os.getpid(), signal.SIGTERM)).start()
-    return jsonify({'ok': True, 'msg': 'Servidor encerrando...'})
-
-if __name__ == '__main__':
-    threading.Timer(1.2, lambda: webbrowser.open(f'http://localhost:{PORT}')).start()
-    print(f'\n\U0001f680 Tracker V3.6 iniciando em http://localhost:{PORT}\n')
-    app.run(host=HOST, port=PORT, debug=False)
