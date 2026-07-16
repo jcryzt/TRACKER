@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tracker — Autenticação</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: #0d1117;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: #161c27;
+      border: 1px solid #1e2d3d;
+      border-radius: 16px;
+      padding: 2.5rem 2rem 2rem;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(0,0,0,.6);
+    }
+
+    .logo {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      color: #22d3ee;
+      text-transform: uppercase;
+      margin-bottom: 1.8rem;
+    }
+
+    .icon { font-size: 36px; margin-bottom: 1rem; }
+
+    h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 0.4rem;
+    }
+
+    .sub {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 2rem;
+      line-height: 1.5;
+    }
+
+    .field-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #64748b;
+      text-align: left;
+      margin-bottom: 5px;
+    }
+
+    .copy-row {
+      display: flex;
+      gap: 7px;
+      margin-bottom: 1.2rem;
+    }
+
+    .copy-input {
+      flex: 1;
+      background: #0d1117;
+      border: 1px solid #1e2d3d;
+      border-radius: 8px;
+      color: #e2e8f0;
+      padding: 9px 12px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .copy-input.code {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 5px;
+      text-align: center;
+      color: #22d3ee;
+    }
+
+    .btn-copy {
+      padding: 9px 13px;
+      background: #1e2d3d;
+      color: #e2e8f0;
+      border: 1px solid #2d3f52;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .15s;
+    }
+    .btn-copy:hover { background: #2d3f52; }
+    .btn-copy.copied { background: #14532d; border-color: #22c55e; color: #22c55e; }
+
+    .btn-open {
+      padding: 9px 13px;
+      background: #1d4ed8;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      transition: background .15s;
+    }
+    .btn-open:hover { background: #2563eb; }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #1e2d3d;
+      margin: 1.4rem 0;
+    }
+
+    .btn-done {
+      width: 100%;
+      padding: 11px;
+      background: #22d3ee;
+      color: #0d1117;
+      border: none;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: background .15s, opacity .15s;
+    }
+    .btn-done:hover { background: #38bdf8; }
+
+    .status {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 1rem;
+      min-height: 18px;
+    }
+    .status.ok   { color: #22c55e; font-weight: 700; }
+    .status.err  { color: #ef4444; }
+    .status.wait { color: #f59e0b; }
+
+    .steps {
+      display: flex;
+      gap: 0;
+      margin-bottom: 1.6rem;
+    }
+    .step {
+      flex: 1;
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #1e2d3d;
+    }
+    .step.active {
+      color: #22d3ee;
+      border-bottom-color: #22d3ee;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">🗂️ Tracker</div>
+
+    <div class="steps">
+      <div class="step active" id="step1">1. Acesse o link</div>
+      <div class="step" id="step2">2. Digite o código</div>
+      <div class="step" id="step3">3. Volte aqui</div>
+    </div>
+
+    <div class="field-label">Abra no navegador</div>
+    <div class="copy-row">
+      <input class="copy-input" id="inp-url" type="text" value="https://microsoft.com/devicelogin" readonly>
+      <button class="btn-copy" onclick="copiar('inp-url', this)">Copiar</button>
+      <a class="btn-open" href="https://microsoft.com/devicelogin" target="_blank" onclick="activateStep(2)">
+        ↗ Abrir
+      </a>
+    </div>
+
+    <div class="field-label">Código de verificação</div>
+    <div class="copy-row">
+      <input class="copy-input code" id="inp-code" type="text" value="{{ device_code.user_code }}" readonly>
+      <button class="btn-copy" onclick="copiar('inp-code', this); activateStep(2)">Copiar</button>
+    </div>
+
+    <hr class="divider">
+
+    <button class="btn-done" onclick="verificarLogin()">
+      ✓ Já fiz o login — Abrir Tracker
+    </button>
+
+    <div class="status" id="status-msg">Aguardando autenticação...</div>
+  </div>
+
+  <script>
+    var _step = 1;
+
+    function activateStep(n) {
+      if (n <= _step) return;
+      _step = n;
+      document.getElementById('step' + n).classList.add('active');
+    }
+
+    function copiar(id, btn) {
+      var el = document.getElementById(id);
+      navigator.clipboard.writeText(el.value).then(function() {
+        btn.textContent = 'Copiado!';
+        btn.classList.add('copied');
+        setTimeout(function() {
+          btn.textContent = 'Copiar';
+          btn.classList.remove('copied');
+        }, 2000);
+      }).catch(function() {
+        el.select();
+        document.execCommand('copy');
+      });
+    }
+
+    function setStatus(msg, cls) {
+      var el = document.getElementById('status-msg');
+      el.textContent = msg;
+      el.className = 'status ' + (cls || '');
+    }
+
+    function verificarLogin() {
+      setStatus('Verificando...', 'wait');
+      fetch('/sharepoint-status')
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.ok) {
+            setStatus('✓ Login confirmado! Redirecionando...', 'ok');
+            activateStep(3);
+            setTimeout(function() { window.location.href = '/'; }, 1200);
+          } else {
+            setStatus('Login ainda não concluído. Termine a autenticação no navegador e tente novamente.', 'err');
+          }
+        })
+        .catch(function() { setStatus('Erro ao verificar. Tente novamente.', 'err'); });
+    }
+
+    // Polling automático a cada 5s
+    var _pollTimer = setInterval(function() {
+      fetch('/sharepoint-status')
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.ok) {
+            clearInterval(_pollTimer);
+            setStatus('✓ Login confirmado! Redirecionando...', 'ok');
+            activateStep(3);
+            setTimeout(function() { window.location.href = '/'; }, 1200);
+          } else if (d.status === 'error') {
+            clearInterval(_pollTimer);
+            setStatus('Erro: ' + (d.message || 'Falha na autenticação.'), 'err');
+          }
+        })
+        .catch(function() {});
+    }, 5000);
+  </script>
+</body>
+</html>

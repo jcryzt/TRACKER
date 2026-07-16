@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tracker — Configuração</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: #0d1117;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .card {
+      background: #161c27;
+      border: 1px solid #1e2d3d;
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 24px 64px rgba(0,0,0,.6);
+    }
+    .logo { font-size: 13px; font-weight: 800; letter-spacing: 0.22em; color: #22d3ee; text-transform: uppercase; margin-bottom: 1.8rem; text-align: center; }
+    h1 { font-size: 16px; font-weight: 700; margin-bottom: .35rem; }
+    .sub { font-size: 12px; color: #64748b; margin-bottom: 1.8rem; line-height: 1.5; }
+    .field-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: #64748b; margin-bottom: 5px; }
+    .field-hint { font-size: 11px; color: #64748b; margin-top: 3px; margin-bottom: 1rem; }
+    input {
+      width: 100%; background: #0d1117; border: 1px solid #1e2d3d;
+      border-radius: 8px; color: #e2e8f0; padding: 10px 12px;
+      font-size: 13px; outline: none; margin-bottom: 2px;
+      transition: border-color .15s;
+    }
+    input:focus { border-color: #22d3ee; }
+    .btn {
+      width: 100%; padding: 11px; background: #22d3ee; color: #0d1117;
+      border: none; border-radius: 9px; font-size: 13px; font-weight: 800;
+      cursor: pointer; letter-spacing: .04em; margin-top: 1.2rem;
+      transition: background .15s;
+    }
+    .btn:hover { background: #38bdf8; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .status { font-size: 11px; margin-top: .8rem; text-align: center; min-height: 16px; }
+    .status.ok  { color: #22c55e; }
+    .status.err { color: #ef4444; }
+    .tip {
+      background: #0d1117; border: 1px solid #1e2d3d; border-radius: 8px;
+      padding: .75rem 1rem; margin-bottom: 1.4rem; font-size: 11px;
+      color: #64748b; line-height: 1.6;
+    }
+    .tip strong { color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">🗂️ Tracker</div>
+    <h1>Configuração inicial</h1>
+    <p class="sub">Informe o App Registration da Azzas para autenticação no Microsoft 365.</p>
+
+    <div class="tip">
+      <strong>Onde encontrar?</strong><br>
+      Portal Azure → App registrations → seu app → <em>Application (client) ID</em> e <em>Directory (tenant) ID</em>.<br><br>
+      Ou copie do <code>ms_config.json</code> do Tracker anterior.
+    </div>
+
+    <div class="field-label">Client ID (Application ID)</div>
+    <input id="inp-cid" type="text" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+           value="{{ client_id }}" autocomplete="off" spellcheck="false">
+    <div class="field-hint">ID do app registrado no Azure AD da Azzas.</div>
+
+    <div class="field-label">Tenant ID</div>
+    <input id="inp-tid" type="text" placeholder="arezzosa  ou  common"
+           value="{{ tenant_id }}" autocomplete="off" spellcheck="false">
+    <div class="field-hint">Deixe <em>common</em> para aceitar qualquer conta Microsoft.</div>
+
+    <button class="btn" id="btn-save" onclick="salvar()">Salvar e continuar →</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <script>
+    function setStatus(msg, cls) {
+      var el = document.getElementById('status');
+      el.textContent = msg;
+      el.className = 'status ' + (cls || '');
+    }
+
+    function salvar() {
+      var cid = document.getElementById('inp-cid').value.trim();
+      var tid = document.getElementById('inp-tid').value.trim() || 'common';
+      if (!cid) { setStatus('Client ID é obrigatório.', 'err'); return; }
+
+      var btn = document.getElementById('btn-save');
+      btn.disabled = true;
+      btn.textContent = 'Salvando...';
+
+      fetch('/config', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({client_id: cid, tenant_id: tid})
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.ok) {
+          setStatus('✓ Configuração salva! Redirecionando...', 'ok');
+          setTimeout(function() { window.location.href = '/auth'; }, 1000);
+        } else {
+          setStatus('Erro: ' + (d.error || 'Falha ao salvar.'), 'err');
+          btn.disabled = false;
+          btn.textContent = 'Salvar e continuar →';
+        }
+      })
+      .catch(function() {
+        setStatus('Erro de conexão.', 'err');
+        btn.disabled = false;
+        btn.textContent = 'Salvar e continuar →';
+      });
+    }
+
+    // Enter key submits
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') salvar();
+    });
+  </script>
+</body>
+</html>
