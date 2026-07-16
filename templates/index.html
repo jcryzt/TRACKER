@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tracker</title>
+<link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -318,6 +320,7 @@ svg#fc-svg{display:block;min-width:1400px;min-height:700px;background:var(--bg2)
 .user-av{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--cyan-d),var(--blue));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0}
 .user-nm{font-size:11px;font-weight:600;color:var(--text);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .role-admin{font-size:9px;padding:1px 6px;border-radius:4px;background:rgba(34,211,238,.15);color:var(--cyan);font-weight:800;text-transform:uppercase}
+.role-lider{font-size:9px;padding:1px 6px;border-radius:4px;background:rgba(167,139,250,.15);color:#a78bfa;font-weight:800;text-transform:uppercase}
 .role-membro{font-size:9px;padding:1px 6px;border-radius:4px;background:rgba(100,116,139,.15);color:var(--muted);font-weight:800;text-transform:uppercase}
 .user-menu{position:absolute;top:calc(100% + 6px);right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;min-width:180px;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:400;display:none;padding:6px 0}
 .user-menu.open{display:block}
@@ -679,6 +682,7 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 
 // ── AUTH / LOGIN ────────────────────────────────────────────────────────────────
 function isAdmin(){return _authUser&&_authUser.role==='admin';}
+function isPrivileged(){return _authUser&&(_authUser.role==='admin'||_authUser.role==='lider');}
 async function checkAuth(){
   try{
     var r=await fetch('/api/auth/status');
@@ -712,8 +716,11 @@ function renderUserBadge(){
   document.getElementById('user-av').textContent=_authUser.initials||'?';
   document.getElementById('user-nm').textContent=_authUser.name||'Usuário';
   var rb=document.getElementById('user-role-badge');
-  rb.textContent=_authUser.role==='admin'?'Admin':'Membro';
-  rb.className=_authUser.role==='admin'?'role-admin':'role-membro';
+  var roleLabels={'admin':'Admin','lider':'Líder','membro':'Membro'};
+  var roleClasses={'admin':'role-admin','lider':'role-lider','membro':'role-membro'};
+  var r=_authUser.role||'membro';
+  rb.textContent=roleLabels[r]||'Membro';
+  rb.className=roleClasses[r]||'role-membro';
 }
 function applyRoleUI(){
   var isAdm=isAdmin();
@@ -739,9 +746,10 @@ function renderUsersList(){
       +(isAdm&&!isSelf
         ?'<select onchange="setUserRole(\''+esc(u.id)+'\',this.value)" style="background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text);padding:4px 8px;font-size:11px">'
           +'<option value="admin"'+(u.role==='admin'?' selected':'')+'>Admin</option>'
+          +'<option value="lider"'+(u.role==='lider'?' selected':'')+'>Líder</option>'
           +'<option value="membro"'+(u.role==='membro'?' selected':'')+'>Membro</option>'
           +'</select>'
-        :'<span class="'+(u.role==='admin'?'role-admin':'role-membro')+'">'+(u.role==='admin'?'Admin':'Membro')+'</span>');
+        :(function(){var rl={'admin':'Admin','lider':'Líder','membro':'Membro'};var rc={'admin':'role-admin','lider':'role-lider','membro':'role-membro'};var r=u.role||'membro';return '<span class="'+(rc[r]||'role-membro')+'">'+(rl[r]||'Membro')+'</span>';}()));
     wrap.appendChild(row);
   });
 }
@@ -932,8 +940,8 @@ function makeCard(item){
   var cls=TIPO_CLS[item.tipo]||'tb-feature';
   // Controle de propriedade: só dono ou admin pode editar/apagar
   var isOwner=_authUser&&item.owner_id&&item.owner_id===_authUser.id;
-  var canEdit=isOwner||isAdmin();
-  var canDel=isOwner||isAdmin();
+  var canEdit=isOwner||isPrivileged();
+  var canDel=isOwner||isPrivileged();
   var acts='<div class="card-act">'+(canEdit?'<button title="Editar" data-id="'+item.id+'" onclick="editItemById(this.dataset.id)">✏️</button>':'')+(canDel?'<button style="color:var(--red)" title="Apagar" data-id="'+item.id+'" onclick="delItem(this.dataset.id)">✕</button>':'')+'</div>';
   // Owner badge (mostra quem criou se não for o usuário atual)
   var ownerBadge='';
@@ -1977,4 +1985,3 @@ border-radius:7px;color:var(--text);padding:6px 10px;font-size:12px"></select>
 </div>
 </body>
 </html>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   

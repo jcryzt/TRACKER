@@ -311,14 +311,31 @@ def require_auth():
         if not token:
             return jsonify({'error': 'Não autenticado', 'code': 'UNAUTHENTICATED'}), 401
 
+_ROLES = ('admin', 'lider', 'membro')
+
+def _get_user_role(user_id, data=None):
+    """Retorna o papel do usuário no banco ('admin'|'lider'|'membro')."""
+    if data is None: data = load_data()
+    db_u = next((u for u in data['users'] if u['id'] == user_id), None)
+    return db_u.get('role', 'membro') if db_u else 'membro'
+
 def _admin_required():
     token, _ = _get_token()
     user = _get_current_user(token) if token else None
     if not user: return None, (jsonify({'error': 'Não autenticado'}), 401)
     data = load_data()
-    db_u = next((u for u in data['users'] if u['id'] == user['id']), None)
-    if not db_u or db_u.get('role') != 'admin':
+    if _get_user_role(user['id'], data) != 'admin':
         return None, (jsonify({'error': 'Apenas admins podem realizar esta ação'}), 403)
+    return data, None
+
+def _lider_or_admin_required():
+    """Exige papel lider ou admin."""
+    token, _ = _get_token()
+    user = _get_current_user(token) if token else None
+    if not user: return None, (jsonify({'error': 'Não autenticado'}), 401)
+    data = load_data()
+    if _get_user_role(user['id'], data) not in ('admin', 'lider'):
+        return None, (jsonify({'error': 'Apenas líderes e admins podem realizar esta ação'}), 403)
     return data, None
 
 # ── ROTAS PRINCIPAIS ──────────────────────────────────────────────────────────
@@ -412,7 +429,7 @@ def set_user_role(uid):
     if not caller_db or caller_db.get('role') != 'admin':
         return jsonify({'error': 'Apenas admins podem alterar papéis'}), 403
     new_role = request.json.get('role')
-    if new_role not in ('admin','membro'): return jsonify({'error': 'Papel inválido'}), 400
+    if new_role not in _ROLES: return jsonify({'error': 'Papel inválido'}), 400
     for u in data['users']:
         if u['id'] == uid: u['role'] = new_role; save_data(data); return jsonify(u)
     return jsonify({'error': 'Usuário não encontrado'}), 404
@@ -514,17 +531,16 @@ def update_item(iid):
     user  = _get_current_user(token) if token else None
     if not user: return jsonify({'error': 'Não autenticado'}), 401
     data  = load_data()
-    # Verifica se é admin
-    db_u  = next((u for u in data['users'] if u['id'] == user['id']), None)
-    is_admin_user = db_u and db_u.get('role') == 'admin'
+    role  = _get_user_role(user['id'], data)
+    is_privileged = role in ('admin', 'lider')  # admin e lider editam qualquer item
     payload = request.json
     if payload.get('assignee_id') and not payload.get('assignee_name'):
         u = next((u for u in data['users'] if u['id'] == payload['assignee_id']), None)
         if u: payload['assignee_name'] = u.get('name','')
     for i, item in enumerate(data['items']):
         if item['id'] == iid:
-            # Só dono ou admin pode editar
-            if item.get('owner_id') and item['owner_id'] != user['id'] and not is_admin_user:
+            # Só dono, lider ou admin pode editar
+            if item.get('owner_id') and item['owner_id'] != user['id'] and not is_privileged:
                 return jsonify({'error': 'Você não tem permissão para editar este item'}), 403
             data['items'][i].update(payload); save_data(data); return jsonify(data['items'][i])
     return jsonify({'error': 'not found'}), 404
@@ -535,11 +551,10 @@ def delete_item(iid):
     user  = _get_current_user(token) if token else None
     if not user: return jsonify({'error': 'Não autenticado'}), 401
     data  = load_data()
-    db_u  = next((u for u in data['users'] if u['id'] == user['id']), None)
-    is_admin_user = db_u and db_u.get('role') == 'admin'
+    is_privileged = _get_user_role(user['id'], data) in ('admin', 'lider')
     item  = next((i for i in data['items'] if i['id'] == iid), None)
     if not item: return jsonify({'error': 'not found'}), 404
-    if item.get('owner_id') and item['owner_id'] != user['id'] and not is_admin_user:
+    if item.get('owner_id') and item['owner_id'] != user['id'] and not is_privileged:
         return jsonify({'error': 'Você não tem permissão para apagar este item'}), 403
     data['items'] = [i for i in data['items'] if i['id'] != iid]
     save_data(data); return jsonify({'ok': True})
@@ -857,5 +872,5 @@ def shutdown_server():
 
 if __name__ == '__main__':
     threading.Timer(1.2, lambda: webbrowser.open(f'http://localhost:{PORT}')).start()
-    print(f'\n\U0001f680 Tracker V3.5 iniciando em http://localhost:{PORT}\n')
+    print(f'\n\U0001f680 Tracker V3.6 iniciando em http://localhost:{PORT}\n')
     app.run(host=HOST, port=PORT, debug=False)

@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tracker — Autenticação</title>
+  <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -263,11 +265,4 @@
             setTimeout(function() { window.location.href = '/'; }, 1200);
           } else if (d.status === 'error') {
             clearInterval(_pollTimer);
-            setStatus('Erro: ' + (d.message || 'Falha na autenticação.'), 'err');
-          }
-        })
-        .catch(function() {});
-    }, 5000);
-  </script>
-</body>
-</html>
+            setStatus('Erro: ' + (d.m
