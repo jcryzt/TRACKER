@@ -219,20 +219,25 @@
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\jaraco\\text\\Lorem '
    'ipsum.txt',
    'DATA'),
+  ('limits\\resources\\redis\\lua_scripts\\acquire_moving_window.lua',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\limits\\resources\\redis\\lua_scripts\\acquire_moving_window.lua',
+   'DATA'),
+  ('limits\\resources\\redis\\lua_scripts\\acquire_sliding_window.lua',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\limits\\resources\\redis\\lua_scripts\\acquire_sliding_window.lua',
+   'DATA'),
   ('limits\\resources\\redis\\lua_scripts\\incr_expire.lua',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\limits\\resources\\redis\\lua_scripts\\incr_expire.lua',
    'DATA'),
-  ('limits\\resources\\redis\\lua_scripts\\moving_window.lua',
+  ('limits\\resources\\redis\\lua_scripts\\sliding_window.lua',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\limits\\resources\\redis\\lua_scripts\\moving_window.lua',
-   'DATA'),
-  ('limits\\resources\\redis\\lua_scripts\\acquire_moving_window.lua',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\limits\\resources\\redis\\lua_scripts\\acquire_moving_window.lua',
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\limits\\resources\\redis\\lua_scripts\\sliding_window.lua',
    'DATA'),
   ('limits\\py.typed',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
@@ -244,20 +249,25 @@
    'Trabalho\\PROJETO - '
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\limits\\resources\\redis\\lua_scripts\\clear_keys.lua',
    'DATA'),
-  ('limits\\resources\\redis\\lua_scripts\\sliding_window.lua',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\limits\\resources\\redis\\lua_scripts\\sliding_window.lua',
-   'DATA'),
   ('limits\\_version.pyi',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\limits\\_version.pyi',
    'DATA'),
-  ('limits\\resources\\redis\\lua_scripts\\acquire_sliding_window.lua',
+  ('limits\\resources\\redis\\lua_scripts\\moving_window.lua',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\limits\\resources\\redis\\lua_scripts\\acquire_sliding_window.lua',
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\limits\\resources\\redis\\lua_scripts\\moving_window.lua',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\top_level.txt',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\top_level.txt',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\RECORD',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\RECORD',
    'DATA'),
   ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\licenses\\LICENSE',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
@@ -269,55 +279,50 @@
    'Trabalho\\PROJETO - '
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\INSTALLER',
    'DATA'),
-  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\WHEEL',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\WHEEL',
-   'DATA'),
-  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\top_level.txt',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\top_level.txt',
-   'DATA'),
   ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\METADATA',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\METADATA',
    'DATA'),
-  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\RECORD',
+  ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\WHEEL',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\RECORD',
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\WHEEL',
    'DATA'),
   ('setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\REQUESTED',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.7.1.dist-info\\REQUESTED',
    'DATA'),
-  ('cryptography-49.0.0.dist-info\\licenses\\LICENSE',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\cryptography-49.0.0.dist-info\\licenses\\LICENSE',
-   'DATA'),
   ('cryptography-49.0.0.dist-info\\licenses\\LICENSE.BSD',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\cryptography-49.0.0.dist-info\\licenses\\LICENSE.BSD',
    'DATA'),
-  ('cryptography-49.0.0.dist-info\\sboms\\cryptography-rust.cyclonedx.json',
+  ('cryptography-49.0.0.dist-info\\METADATA',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\cryptography-49.0.0.dist-info\\sboms\\cryptography-rust.cyclonedx.json',
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\cryptography-49.0.0.dist-info\\METADATA',
    'DATA'),
   ('cryptography-49.0.0.dist-info\\sboms\\sbom.json',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\cryptography-49.0.0.dist-info\\sboms\\sbom.json',
    'DATA'),
-  ('cryptography-49.0.0.dist-info\\METADATA',
+  ('cryptography-49.0.0.dist-info\\RECORD',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\cryptography-49.0.0.dist-info\\METADATA',
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\cryptography-49.0.0.dist-info\\RECORD',
+   'DATA'),
+  ('cryptography-49.0.0.dist-info\\licenses\\LICENSE.APACHE',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\cryptography-49.0.0.dist-info\\licenses\\LICENSE.APACHE',
+   'DATA'),
+  ('cryptography-49.0.0.dist-info\\sboms\\cryptography-rust.cyclonedx.json',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\cryptography-49.0.0.dist-info\\sboms\\cryptography-rust.cyclonedx.json',
    'DATA'),
   ('cryptography-49.0.0.dist-info\\INSTALLER',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
@@ -329,155 +334,150 @@
    'Trabalho\\PROJETO - '
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\cryptography-49.0.0.dist-info\\WHEEL',
    'DATA'),
-  ('cryptography-49.0.0.dist-info\\licenses\\LICENSE.APACHE',
+  ('cryptography-49.0.0.dist-info\\licenses\\LICENSE',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\cryptography-49.0.0.dist-info\\licenses\\LICENSE.APACHE',
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\cryptography-49.0.0.dist-info\\licenses\\LICENSE',
    'DATA'),
-  ('cryptography-49.0.0.dist-info\\RECORD',
+  ('flask-3.1.3.dist-info\\WHEEL',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\cryptography-49.0.0.dist-info\\RECORD',
-   'DATA'),
-  ('markupsafe-3.0.3.dist-info\\INSTALLER',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\INSTALLER',
-   'DATA'),
-  ('flask-3.1.3.dist-info\\entry_points.txt',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\entry_points.txt',
-   'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\RECORD',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\RECORD',
-   'DATA'),
-  ('werkzeug-3.1.8.dist-info\\licenses\\LICENSE.txt',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\werkzeug-3.1.8.dist-info\\licenses\\LICENSE.txt',
-   'DATA'),
-  ('flask-3.1.3.dist-info\\licenses\\LICENSE.txt',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\licenses\\LICENSE.txt',
-   'DATA'),
-  ('flask-3.1.3.dist-info\\RECORD',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\RECORD',
-   'DATA'),
-  ('click-8.4.2.dist-info\\licenses\\LICENSE.txt',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\click-8.4.2.dist-info\\licenses\\LICENSE.txt',
-   'DATA'),
-  ('markupsafe-3.0.3.dist-info\\WHEEL',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\WHEEL',
-   'DATA'),
-  ('flask-3.1.3.dist-info\\INSTALLER',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\INSTALLER',
-   'DATA'),
-  ('click-8.4.2.dist-info\\INSTALLER',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\click-8.4.2.dist-info\\INSTALLER',
-   'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\INSTALLER',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\INSTALLER',
-   'DATA'),
-  ('markupsafe-3.0.3.dist-info\\RECORD',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\RECORD',
-   'DATA'),
-  ('werkzeug-3.1.8.dist-info\\METADATA',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\werkzeug-3.1.8.dist-info\\METADATA',
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\WHEEL',
    'DATA'),
   ('click-8.4.2.dist-info\\METADATA',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\click-8.4.2.dist-info\\METADATA',
    'DATA'),
-  ('markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
+  ('flask-3.1.3.dist-info\\licenses\\LICENSE.txt',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\licenses\\LICENSE.txt',
    'DATA'),
-  ('werkzeug-3.1.8.dist-info\\RECORD',
+  ('markupsafe-3.0.3.dist-info\\WHEEL',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\werkzeug-3.1.8.dist-info\\RECORD',
-   'DATA'),
-  ('werkzeug-3.1.8.dist-info\\WHEEL',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\werkzeug-3.1.8.dist-info\\WHEEL',
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\WHEEL',
    'DATA'),
   ('click-8.4.2.dist-info\\WHEEL',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\click-8.4.2.dist-info\\WHEEL',
    'DATA'),
-  ('flask-3.1.3.dist-info\\REQUESTED',
+  ('werkzeug-3.1.8.dist-info\\WHEEL',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\REQUESTED',
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\werkzeug-3.1.8.dist-info\\WHEEL',
    'DATA'),
-  ('markupsafe-3.0.3.dist-info\\top_level.txt',
+  ('markupsafe-3.0.3.dist-info\\INSTALLER',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\top_level.txt',
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\INSTALLER',
    'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\WHEEL',
+  ('werkzeug-3.1.8.dist-info\\METADATA',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\WHEEL',
-   'DATA'),
-  ('click-8.4.2.dist-info\\RECORD',
-   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
-   'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\click-8.4.2.dist-info\\RECORD',
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\werkzeug-3.1.8.dist-info\\METADATA',
    'DATA'),
   ('werkzeug-3.1.8.dist-info\\INSTALLER',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\werkzeug-3.1.8.dist-info\\INSTALLER',
    'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\LICENSE.txt',
+  ('click-8.4.2.dist-info\\licenses\\LICENSE.txt',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\LICENSE.txt',
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\click-8.4.2.dist-info\\licenses\\LICENSE.txt',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\licenses\\LICENSE.txt',
    'DATA'),
   ('itsdangerous-2.2.0.dist-info\\METADATA',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\METADATA',
    'DATA'),
+  ('flask-3.1.3.dist-info\\entry_points.txt',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\entry_points.txt',
+   'DATA'),
   ('flask-3.1.3.dist-info\\METADATA',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\METADATA',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\WHEEL',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\WHEEL',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\INSTALLER',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\INSTALLER',
+   'DATA'),
+  ('werkzeug-3.1.8.dist-info\\RECORD',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\werkzeug-3.1.8.dist-info\\RECORD',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\top_level.txt',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\top_level.txt',
+   'DATA'),
+  ('click-8.4.2.dist-info\\RECORD',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\click-8.4.2.dist-info\\RECORD',
+   'DATA'),
+  ('markupsafe-3.0.3.dist-info\\RECORD',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\RECORD',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\RECORD',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\RECORD',
+   'DATA'),
+  ('flask-3.1.3.dist-info\\RECORD',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\RECORD',
+   'DATA'),
+  ('werkzeug-3.1.8.dist-info\\licenses\\LICENSE.txt',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\werkzeug-3.1.8.dist-info\\licenses\\LICENSE.txt',
+   'DATA'),
+  ('flask-3.1.3.dist-info\\INSTALLER',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\INSTALLER',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\LICENSE.txt',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\LICENSE.txt',
    'DATA'),
   ('markupsafe-3.0.3.dist-info\\METADATA',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
    'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\markupsafe-3.0.3.dist-info\\METADATA',
    'DATA'),
-  ('flask-3.1.3.dist-info\\WHEEL',
+  ('click-8.4.2.dist-info\\INSTALLER',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
    'Trabalho\\PROJETO - '
-   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\WHEEL',
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\click-8.4.2.dist-info\\INSTALLER',
+   'DATA'),
+  ('flask-3.1.3.dist-info\\REQUESTED',
+   'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '
+   'Trabalho\\PROJETO - '
+   'OCEAN\\CODIGOS\\tracker\\.venv\\Lib\\site-packages\\flask-3.1.3.dist-info\\REQUESTED',
    'DATA'),
   ('base_library.zip',
    'C:\\Users\\johcsilva\\OneDrive - AREZZO INDUSTRIA E COMERCIO S.A\\Área de '

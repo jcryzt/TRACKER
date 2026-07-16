@@ -13,11 +13,9 @@ SCOPES        = ['https://graph.microsoft.com/Files.ReadWrite.All']
 # AAD_AUTHORITY = 'https://login.microsoftonline.com/seu-tenant-id'
 
 # ── SharePoint ────────────────────────────────────────────────────────────────
-SP_HOST   = 'seudominio.sharepoint.com'
-SP_SITE   = 'NOME_DO_SITE'
-SP_FOLDER = 'NOME_DA_PASTA'
-SP_SEEDS  = 'seeds'
+SP_HOST   = 'seudominio.sharepoint.com'   # ex: contoso.sharepoint.com
+SP_SITE   = 'NOME_DO_SITE'               # nome do site SharePoint (sem /sites/)
+SP_FOLDER = 'NOME_DA_PASTA'              # pasta raiz onde fica tracker_data.json
 
-# ── Servidor ──────────────────────────────────────────────────────────────────
-PORT = 5003
-HOST = '0.0.0.0'
+# Subpasta dentro de SP_FOLDER onde os seeds sao armazenados no SharePoint.
+# O Tracker faz upload/download automatico desta pa

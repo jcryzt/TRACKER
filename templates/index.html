@@ -1084,9 +1084,10 @@ function renderVersions(){
       var short=e.minor||v.version;
       var changes=(v.changes||[]).slice(0,4).map(function(c){return '<li>'+esc(c)+'</li>';}).join('');
       var node=document.createElement('div'); node.className='ver-node '+cls;
-      var delBtn='<button class="ver-del" data-id="'+v.id+'" onclick="delVersion(this.dataset.id)">✕</button>';
+      var actBtns='<button class="ver-del" data-id="'+v.id+'" onclick="delVersion(this.dataset.id)" title="Apagar">✕</button>'+
+        '<button class="ver-del" style="right:28px;background:rgba(34,211,238,.15);color:var(--cyan)" data-id="'+v.id+'" onclick="editVersion(this.dataset.id)" title="Editar">✎</button>';
       node.innerHTML='<div class="ver-dot-w"><div class="ver-dot">'+esc(String(short))+'</div></div>'+
-        '<div class="ver-card">'+delBtn+
+        '<div class="ver-card">'+actBtns+
         '<div style="font-size:13px;font-weight:900;color:var(--text);margin-bottom:2px">'+esc(v.version)+'</div>'+
         '<div style="font-size:11px;color:var(--muted);margin-bottom:4px">'+esc(v.name||'')+'</div>'+
         '<div style="font-size:10px;color:var(--muted2);margin-bottom:6px">'+esc(v.date||v.created_at||'')+'</div>'+
@@ -1100,13 +1101,37 @@ function renderVersions(){
     list.appendChild(row);
   });
 }
-function openVerModal(){['v-num','v-name','v-date'].forEach(function(x){document.getElementById(x).value='';});document.getElementById('v-status').value='current';document.getElementById('v-changes').value='';document.getElementById('ov-ver').classList.remove('hide');setTimeout(function(){document.getElementById('v-num').focus();},50);}
-function closeVerModal(){document.getElementById('ov-ver').classList.add('hide');}
+var _editVerId = null;
+function openVerModal(vObj){
+  _editVerId = vObj ? vObj.id : null;
+  document.getElementById('v-num').value    = vObj ? (vObj.version||'') : '';
+  document.getElementById('v-name').value   = vObj ? (vObj.name||'') : '';
+  document.getElementById('v-date').value   = vObj ? (vObj.date||'') : '';
+  document.getElementById('v-status').value = vObj ? (vObj.status||'current') : 'current';
+  document.getElementById('v-changes').value= vObj ? (vObj.changes||[]).join('\n') : '';
+  // Atualiza título do modal
+  var h2 = document.querySelector('#ov-ver .modal h2');
+  if(h2) h2.textContent = _editVerId ? '✏️ Editar Versão' : '🏷️ Nova Versão';
+  document.getElementById('ov-ver').classList.remove('hide');
+  setTimeout(function(){document.getElementById('v-num').focus();},50);
+}
+function closeVerModal(){document.getElementById('ov-ver').classList.add('hide'); _editVerId=null;}
 async function saveVersion(){
   var num=document.getElementById('v-num').value.trim(); if(!num)return;
   var changes=document.getElementById('v-changes').value.split('\n').map(function(s){return s.trim();}).filter(Boolean);
-  var v=await api('POST','/api/versions',{version:num,name:document.getElementById('v-name').value.trim(),date:document.getElementById('v-date').value.trim(),status:document.getElementById('v-status').value,changes:changes,project_id:_pid});
-  _versions.push(v); closeVerModal(); renderVersions();
+  var payload={version:num,name:document.getElementById('v-name').value.trim(),date:document.getElementById('v-date').value.trim(),status:document.getElementById('v-status').value,changes:changes,project_id:_pid};
+  if(_editVerId){
+    var updated=await api('PUT','/api/versions/'+_editVerId, payload);
+    _versions=_versions.map(function(v){return v.id===_editVerId?updated:v;});
+  } else {
+    var v=await api('POST','/api/versions',payload);
+    _versions.push(v);
+  }
+  closeVerModal(); renderVersions();
+}
+function editVersion(id){
+  var v=_versions.find(function(v){return v.id===id;});
+  if(v) openVerModal(v);
 }
 async function delVersion(id){
   if(!confirm('Apagar esta versão?'))return;
@@ -1776,15 +1801,25 @@ checkAuth();
 var _seedsData = [];
 var _seedActivePpt = null;
 
-function openSeedModal(){
+function _seedAutoNome(esp) {
   var d = new Date();
-  var meses = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
-  var auto = 'SEED.' + meses[d.getMonth()] + '.' + String(d.getFullYear()).slice(2);
-  document.getElementById('seed-nome').value = auto;
+  var meses=['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+  var mes = meses[d.getMonth()], ano = String(d.getFullYear()).slice(2);
+  if (esp && esp.trim()) {
+    var safe = esp.trim().toUpperCase().replace(/[^A-Z0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
+    return 'SEED_' + safe + '_' + mes + '.' + ano;
+  }
+  return 'SEED_' + mes + '.' + ano;
+}
+function openSeedModal(){
+  var espInput  = document.getElementById('seed-especialista');
+  var nomeInput = document.getElementById('seed-nome');
+  if (_authUser && _authUser.name) espInput.value = _authUser.name.split(' ')[0];
+  nomeInput.value = _seedAutoNome(espInput.value);
+  espInput.oninput = function(){ nomeInput.value = _seedAutoNome(this.value); };
   document.getElementById('ov-seeds').classList.remove('hide');
   seedTabSwitch('criar', document.getElementById('seed-tab-criar'));
   loadSeedsLista();
-  renderPptSeedOptions();
 }
 function closeSeedModal(){ document.getElementById('ov-seeds').classList.add('hide'); }
 
@@ -1797,29 +1832,68 @@ function seedTabSwitch(tab, btn){
   if(tab==='diff')  populateDiffSelects();
 }
 
+function _seedRowHtml(s) {
+  return '<div class="seed-row">' +
+    '<div class="sr-name">'+s.name+'</div>' +
+    '<div class="sr-meta">' +
+      s.created_at + '<br>' +
+      s.n_projects+' proj · '+s.n_total+' itens · ' +
+      '<span style="color:var(--green)">'+s.n_finalizados+' fin</span> · ' +
+      '<span style="color:var(--cyan)">'+s.n_pendentes+' pend</span> · ' +
+      '<span style="color:#ef4444">'+s.n_outros+' outros</span>' +
+    '</div>' +
+    '<div class="sr-acts">' +
+      '<button class="btn-ok" style="font-size:10px;padding:4px 8px" title="Baixar do SharePoint" ' +
+        'data-seed="'+s.name+'" onclick="seedSpDownload(this.dataset.seed,this)">⬇ SP</button>' +
+      '<button class="btn-ok" style="font-size:10px;padding:4px 8px;background:#1e3a5f" title="Enviar ao SharePoint" ' +
+        'data-seed="'+s.name+'" onclick="seedSpUpload(this.dataset.seed,this)">⬆ SP</button>' +
+      '<button class="btn-ok" data-seed="'+s.name+'" onclick="seedRestaurar(this.dataset.seed)">↩ Restaurar</button>' +
+    '</div>' +
+  '</div>';
+}
+
 async function loadSeedsLista(){
   var wrap = document.getElementById('seed-list-wrap');
   wrap.innerHTML = '<p style="color:var(--muted);font-size:13px;padding:10px">Carregando...</p>';
   _seedsData = await api('GET','/api/seeds');
-  if(!_seedsData.length){
+  if(!Array.isArray(_seedsData) || !_seedsData.length){
     wrap.innerHTML = '<p style="color:var(--muted);font-size:13px;padding:10px">Nenhum seed salvo ainda.</p>';
     return;
   }
-  wrap.innerHTML = _seedsData.map(function(s){
-    return '<div class="seed-row">' +
-      '<div class="sr-name">'+s.name+'</div>' +
-      '<div class="sr-meta">' +
-        s.created_at + '<br>' +
-        s.n_projects+' proj · '+s.n_total+' itens · ' +
-        '<span style="color:var(--green)">'+s.n_finalizados+' fin</span> · ' +
-        '<span style="color:var(--cyan)">'+s.n_pendentes+' pend</span> · ' +
-        '<span style="color:#ef4444">'+s.n_outros+' outros</span>' +
+  // Agrupar por especialista
+  var groups = {}, order = [];
+  _seedsData.forEach(function(s){
+    var grp = (s.especialista || '').trim() || 'Geral';
+    if(!groups[grp]){ groups[grp] = []; order.push(grp); }
+    groups[grp].push(s);
+  });
+  order.sort(function(a,b){ return a==='Geral'?1:b==='Geral'?-1:a.localeCompare(b); });
+  var html = '';
+  order.forEach(function(grp){
+    html += '<div style="margin-bottom:10px">' +
+      '<div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;' +
+        'color:var(--cyan);padding:4px 0 6px;border-bottom:1px solid var(--border2);margin-bottom:4px">' +
+        '👤 '+grp+' <span style="color:var(--muted);font-weight:400">('+groups[grp].length+')</span>' +
       '</div>' +
-      '<div class="sr-acts">' +
-        '<button class="btn-ok" data-seed="'+s.name+'" onclick="seedRestaurar(this.dataset.seed)">↩ Restaurar</button>' +
-      '</div>' +
+      groups[grp].map(_seedRowHtml).join('') +
     '</div>';
-  }).join('');
+  });
+  wrap.innerHTML = html;
+}
+
+async function seedSpUpload(nome, btn){
+  btn.disabled = true; btn.textContent = '...';
+  var r = await api('POST', '/api/seeds/sp/upload/'+encodeURIComponent(nome));
+  btn.disabled = false; btn.textContent = '⬆ SP';
+  showSeedMsg(r.ok ? '✅ "'+nome+'" enviado ao SharePoint.' : '⚠️ '+(r.msg||r.error||'Erro'));
+}
+
+async function seedSpDownload(nome, btn){
+  btn.disabled = true; btn.textContent = '...';
+  var r = await api('POST', '/api/seeds/sp/download/'+encodeURIComponent(nome));
+  btn.disabled = false; btn.textContent = '⬇ SP';
+  if(r.ok){ showSeedMsg('✅ "'+nome+'" baixado do SharePoint.'); await loadSeedsLista(); }
+  else showSeedMsg('⚠️ '+(r.msg||r.error||'Erro'));
 }
 
 async function refreshSeedsFromSP(){
@@ -1837,20 +1911,22 @@ async function refreshSeedsFromSP(){
 
 async function seedCriarApenas(){
   var nome = document.getElementById('seed-nome').value.trim().toUpperCase();
+  var esp  = document.getElementById('seed-especialista').value.trim();
   if(!nome) return;
-  var r = await api('POST','/api/seeds',{name: nome});
-  if(r.ok) showSeedMsg('✅ Seed "'+r.name+'" salvo com sucesso!');
+  var r = await api('POST','/api/seeds',{name: nome, especialista: esp});
+  if(r.ok) showSeedMsg('✅ Seed "'+r.name+'"'+(r.especialista?' ('+r.especialista+')':'')+' salvo com sucesso!');
   else showSeedMsg('Erro: '+(r.error||'desconhecido'));
 }
 
 async function seedFechar(){
-  var nome   = document.getElementById('seed-nome').value.trim().toUpperCase();
-  var levar  = document.querySelector('input[name="seed-inacab"]:checked').value === 'levar';
+  var nome  = document.getElementById('seed-nome').value.trim().toUpperCase();
+  var esp   = document.getElementById('seed-especialista').value.trim();
+  var levar = document.querySelector('input[name="seed-inacab"]:checked').value === 'levar';
   if(!nome) return;
   if(!confirm('Fechar período "'+nome+'"? Os itens '+(levar?'inacabados ficam no sistema':'são removidos')+'.')) return;
-  var r = await api('POST','/api/seeds/fechar',{name: nome, levar_inacabados: levar});
+  var r = await api('POST','/api/seeds/fechar',{name: nome, especialista: esp, levar_inacabados: levar});
   if(r.ok){
-    var msg = '✅ Seed "'+r.name+'" salvo. ' + (levar ? r.n_levados+' itens inacabados levados adiante.' : 'Itens inacabados removidos.');
+    var msg = '✅ Seed "'+r.name+'"'+(r.especialista?' ('+r.especialista+')':'')+' salvo. ' + (levar ? r.n_levados+' itens inacabados levados adiante.' : 'Itens inacabados removidos.');
     showSeedMsg(msg);
     await loadProjects();
   } else showSeedMsg('Erro: '+(r.error||'desconhecido'));
@@ -1934,10 +2010,15 @@ async function runSeedDiff(){
     <!-- TAB: CRIAR / FECHAR -->
     <div id="seed-pane-criar">
       <div class="fechar-box">
-        <div>
-          <label>Nome do seed <span style="color:var(--muted)">(ex: SEED.JAN.26)</span></label>
-          <input type="text" id="seed-nome" placeholder="SEED.JAN.26" style="margin-top:5px">
-        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div style="flex:1;min-width:160px">
+            <label>Especialista <span style="color:var(--muted)">(ex: João)</span></label>
+            <input type="text" id="seed-especialista" placeholder="Nome do especialista" style="margin-top:5px">
+          </div>
+          <div style="flex:1;min-width:160px">
+            <label>Nome do seed <span style="color:var(--muted)">(auto)</span></label>
+            <input type="text" id="seed-nome" placeholder="SEED_ESP_JAN.26" style="margin-top:5px">
+          </div>        </div>
         <div>
           <label style="margin-bottom:4px;display:block">O que fazer com os itens inacabados?</label>
           <div class="radio-row">
@@ -1946,8 +2027,8 @@ async function runSeedDiff(){
           </div>
         </div>
         <div style="display:flex;gap:8px;margin-top:4px">
-          <button class="btn-ok" style="flex:1" data-admin-only onclick="seedCriarApenas()">💾 Salvar seed (sem fechar)</button>
-          <button class="btn-ok" style="flex:1;background:linear-gradient(135deg,#f97316,#ef4444)" data-admin-only onclick="seedFechar()">📦 Fechar período e salvar</button>
+          <button class="btn-ok" style="flex:1" onclick="seedCriarApenas()">💾 Salvar seed (sem fechar)</button>
+          <button class="btn-ok" style="flex:1;background:linear-gradient(135deg,#f97316,#ef4444)" onclick="seedFechar()">📦 Fechar período e salvar</button>
         </div>
         <p id="seed-msg" style="font-size:11px;color:var(--green);margin-top:2px;display:none"></p>
       </div>
@@ -1958,14 +2039,12 @@ async function runSeedDiff(){
       <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:12px;flex-wrap:wrap">
         <div style="flex:1;min-width:140px">
           <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:4px">Seed A (antes)</div>
-          <select id="diff-seed-a" style="width:100%;background:var(--bg3);border:1px solid var(--border2);
-border-radius:7px;color:var(--text);padding:6px 10px;font-size:12px"></select>
+          <select id="diff-seed-a" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:6px 10px;font-size:12px"></select>
         </div>
         <div style="font-size:18px;color:var(--muted);padding-bottom:4px">to</div>
         <div style="flex:1;min-width:140px">
           <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:4px">Seed B (depois)</div>
-          <select id="diff-seed-b" style="width:100%;background:var(--bg3);border:1px solid var(--border2);
-border-radius:7px;color:var(--text);padding:6px 10px;font-size:12px"></select>
+          <select id="diff-seed-b" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:6px 10px;font-size:12px"></select>
         </div>
         <button class="btn-ok" onclick="runSeedDiff()" style="flex-shrink:0;padding:7px 16px">Comparar</button>
       </div>
@@ -1989,26 +2068,3 @@ border-radius:7px;color:var(--text);padding:6px 10px;font-size:12px"></select>
     </div>
   </div>
 </div>
-
-
-<!-- ══ COMMENT EDIT MODAL ══════════════════════════════════════════════ -->
-<div class="ov hide" id="ov-comment" onclick="if(event.target===this)closeCommentModal()">
-  <div class="modal" style="max-width:380px">
-    <h2>💬 Editar Comentário</h2>
-    <div class="fr">
-      <label>Texto do comentário</label>
-      <textarea id="comment-text" rows="5" placeholder="Escreva seu comentário..." style="resize:vertical"></textarea>
-    </div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeCommentModal()">Cancelar</button>
-      <button class="btn-ok" onclick="saveCommentEdit()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<div class="ov hide" id="ov-fc-label" onclick="if(event.target===this)closeLabelModal()">
-  <div class="modal" style="max-width:380px">
-    <h2>✏️ Editar Rótulo</h2>
-    <div class="fr">
-      <label>Texto do nó</label>
-      <input type="text" id="fc-label-input" placeholder="Rótulo do nó..." maxlength="80" onkeydown="if(event.key==='Enter')saveLabelEdit()" style="font-size:15px">

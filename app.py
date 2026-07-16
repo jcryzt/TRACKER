@@ -91,9 +91,28 @@ STATUS_FINALIZADOS = ['concluido']
 STATUS_OUTROS      = ['descartado']
 
 def now(): return datetime.now().strftime('%d/%m/%Y')
-def seed_name_auto():
+def seed_name_auto(especialista=None):
     d = datetime.now()
-    return f"SEED.{MESES_PT[d.month-1]}.{str(d.year)[2:]}"
+    mes = MESES_PT[d.month-1]
+    ano = str(d.year)[2:]
+    if especialista:
+        import re as _re
+        safe = _re.sub(r'[^A-Z0-9]', '_', especialista.strip().upper())
+        safe = _re.sub(r'_+', '_', safe).strip('_')
+        return f"SEED_{safe}_{mes}.{ano}"
+    return f"SEED_{mes}.{ano}"
+
+def _parse_especialista(filename):
+    """SEED_JOAO_JUL.26.json -> 'JOAO' | SEED_JUL.26.json -> None"""
+    import re as _re
+    name = filename.replace('.json', '')
+    parts = name.split('_')
+    # formato: SEED_{ESP}_{MES}.{ANO}  — pelo menos 3 partes
+    if len(parts) >= 3 and parts[0] == 'SEED':
+        # ultima parte deve ser MES.ANO (ex: JUL.26)
+        if _re.match(r'^[A-Z]{3}\.\d{2}$', parts[-1]):
+            return '_'.join(parts[1:-1])
+    return None
 
 # ── DPAPI — copiado do Torre Web ──────────────────────────────────────────────
 import ctypes, ctypes.wintypes as _wintypes
@@ -779,7 +798,9 @@ def get_seed_data(name):
 
 def _seed_meta(filename, d):
     meta = d.get('_meta',{}); items = d.get('items',[])
-    return {'filename':filename,'name':filename.replace('.json',''),'created_at':meta.get('created_at',''),
+    especialista = meta.get('especialista') or _parse_especialista(filename) or ''
+    return {'filename':filename,'name':filename.replace('.json',''),
+            'created_at':meta.get('created_at',''),'especialista':especialista,
             'n_projects':len(d.get('projects',[])),'n_total':len(items),
             'n_finalizados':len([i for i in items if i.get('status') in STATUS_FINALIZADOS]),
             'n_pendentes':len([i for i in items if i.get('status') in STATUS_PENDENTES]),
@@ -847,18 +868,19 @@ def refresh_seeds():
 @app.route('/api/seeds', methods=['POST'])
 @limiter.limit("10 per hour")
 def criar_seed():
-    data_req, err = _admin_required()
+    data_req, err = _lider_or_admin_required()
     if err: return err
     body = request.json or {}
-    name = body.get('name', seed_name_auto()).strip().upper()
+    especialista = (body.get('especialista') or '').strip() or None
+    name = body.get('name', seed_name_auto(especialista)).strip().upper()
     snap = json.loads(json.dumps(load_data()))
-    snap['_meta'] = {'name':name,'created_at':datetime.now().strftime('%d/%m/%Y %H:%M')}
+    snap['_meta'] = {'name':name,'especialista':especialista or '','created_at':datetime.now().strftime('%d/%m/%Y %H:%M')}
     filename = safe_seed_filename(name)
     ok, _ = sp_put_json(f'{SP_SEEDS}/{filename}', snap)
     if not ok:
         with open(os.path.join(SEED_DIR, filename), 'w', encoding='utf-8') as f:
             json.dump(snap, f, ensure_ascii=False, indent=2)
-    return jsonify({'ok':True,'name':name,'filename':filename})
+    return jsonify({'ok':True,'name':name,'filename':filename,'especialista':especialista or ''})
 
 @app.route('/api/seeds/<name>', methods=['GET'])
 def get_seed(name):
@@ -868,7 +890,7 @@ def get_seed(name):
 
 @app.route('/api/seeds/<name>/restaurar', methods=['POST'])
 def restaurar_seed(name):
-    data_req, err = _admin_required()
+    data_req, err = _lider_or_admin_required()
     if err: return err
     snap, serr = get_seed_data(name)
     if snap is None: return jsonify({'error': serr or 'not found'}), 404
@@ -893,14 +915,15 @@ def restaurar_seed(name):
 
 @app.route('/api/seeds/fechar', methods=['POST'])
 def fechar_projeto():
-    data_req, err = _admin_required()
+    data_req, err = _lider_or_admin_required()
     if err: return err
     body = request.json or {}
-    name = body.get('name', seed_name_auto()).strip().upper()
+    especialista = (body.get('especialista') or '').strip() or None
+    name = body.get('name', seed_name_auto(especialista)).strip().upper()
     levar_inacab = body.get('levar_inacabados', True)
     data = data_req
     snap = json.loads(json.dumps(data))
-    snap['_meta'] = {'name':name,'created_at':datetime.now().strftime('%d/%m/%Y %H:%M')}
+    snap['_meta'] = {'name':name,'especialista':especialista or '','created_at':datetime.now().strftime('%d/%m/%Y %H:%M')}
     filename = safe_seed_filename(name)
     ok, _ = sp_put_json(f'{SP_SEEDS}/{filename}', snap)
     if not ok:
@@ -908,8 +931,43 @@ def fechar_projeto():
             json.dump(snap, f, ensure_ascii=False, indent=2)
     data["items"] = [i for i in data["items"] if i.get("status") in STATUS_PENDENTES] if levar_inacab else []
     save_data(data)
-    return jsonify({"ok":True,"name":name,"n_levados":len(data["items"])})
+    return jsonify({"ok":True,"name":name,"n_levados":len(data["items"]),"especialista":especialista or ''})
 
+@app.route('/api/seeds/sp/upload/<name>', methods=['POST'])
+@limiter.limit("20 per hour")
+def sp_upload_seed(name):
+    data_req, err = _lider_or_admin_required()
+    if err: return err
+    filename = safe_seed_filename(name)
+    fp = os.path.join(SEED_DIR, filename)
+    if not os.path.exists(fp):
+        return jsonify({'error': 'Seed local nao encontrado'}), 404
+    try:
+        with open(fp, encoding='utf-8') as f: d = json.load(f)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    ok, msg = sp_put_json(f'{SP_SEEDS}/{filename}', d)
+    if ok:
+        _seeds_cache['data'] = None
+        return jsonify({'ok': True, 'filename': filename, 'msg': 'Enviado para SharePoint'})
+    return jsonify({'ok': False, 'msg': msg or 'Falha no upload'}), 503
+
+@app.route('/api/seeds/sp/download/<name>', methods=['POST'])
+@limiter.limit("20 per hour")
+def sp_download_seed(name):
+    token, err = _get_token()
+    if not token: return jsonify({'error': 'Nao autenticado'}), 401
+    filename = safe_seed_filename(name)
+    d, sp_err = sp_get_json(f'{SP_SEEDS}/{filename}')
+    if d is None:
+        return jsonify({'error': sp_err or 'Seed nao encontrado no SharePoint'}), 404
+    fp = os.path.join(SEED_DIR, filename)
+    try:
+        with open(fp, 'w', encoding='utf-8') as f:
+            json.dump(d, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    return jsonify({'ok': True, 'filename': filename, 'msg': 'Baixado do SharePoint'})
 
 @app.route("/api/shutdown", methods=["POST"])
 def shutdown_server():
@@ -919,5 +977,5 @@ def shutdown_server():
 
 if __name__ == '__main__':
     threading.Timer(1.2, lambda: webbrowser.open(f'http://localhost:{PORT}')).start()
-    print(f'\n🚀 Tracker V3.6 iniciando em http://localhost:{PORT}\n')
+    print(f'\n Tracker V3.8 iniciando em http://localhost:{PORT}\n')
     app.run(host=HOST, port=PORT, debug=False)
