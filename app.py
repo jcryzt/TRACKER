@@ -977,5 +977,5 @@ def shutdown_server():
 
 if __name__ == '__main__':
     threading.Timer(1.2, lambda: webbrowser.open(f'http://localhost:{PORT}')).start()
-    print(f'\n Tracker V3.8 iniciando em http://localhost:{PORT}\n')
+    print(f'\n Tracker V3.9 iniciando em http://localhost:{PORT}\n')
     app.run(host=HOST, port=PORT, debug=False)

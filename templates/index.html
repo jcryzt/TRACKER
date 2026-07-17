@@ -17,6 +17,7 @@
 }
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;gap:6px;height:50px;position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.4)}
+.nav-tabs{display:flex;align-items:center;gap:4px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}.nav-tabs::-webkit-scrollbar{display:none}
 .logo{font-weight:900;font-size:16px;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-right:4px}
 .proj-pill{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:12px;font-weight:700;color:var(--text);position:relative}
 .proj-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
@@ -31,7 +32,7 @@ nav{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;d
 .tab:hover{background:var(--bg3);color:var(--text)}
 .tab.on{background:var(--bg3);color:var(--cyan)}
 .tab.on::after{content:"";position:absolute;bottom:0;left:10px;right:10px;height:2px;background:var(--cyan);border-radius:2px}
-.nav-r{display:flex;gap:8px;align-items:center;margin-left:auto}
+.nav-r{display:flex;gap:8px;align-items:center;flex-shrink:0}
 .btn-s{background:transparent;color:var(--muted);border:1px solid var(--border2);border-radius:7px;padding:4px 10px;font-size:11px;cursor:pointer}
 .btn-s:hover{color:var(--text);border-color:var(--muted)}
 .btn-n{background:linear-gradient(135deg,var(--cyan-d),var(--blue));color:#fff;border:none;border-radius:7px;padding:5px 13px;font-size:12px;font-weight:700;cursor:pointer}
@@ -350,12 +351,15 @@ svg#fc-svg{display:block;min-width:1400px;min-height:700px;background:var(--bg2)
     </div>
   </div>
   <div class="nav-sep"></div>
-  <button class="tab on" id="tab-mapa"      onclick="setView('mapa',this)">🗺️ Mapa</button>
-  <button class="tab"    id="tab-kanban"    onclick="setView('kanban',this)">⬛ Kanban</button>
-  <button class="tab"    id="tab-colunas"   onclick="setView('colunas',this)">▦ Processos</button>
-  <button class="tab"    id="tab-versoes"   onclick="setView('versoes',this)">🏷️ Versões</button>
-  <button class="tab"    id="tab-flowchart" onclick="setView('flowchart',this)">📊 Fluxograma</button>
-  <button class="tab"    id="tab-dash"      onclick="setView('dash',this)">📊 Dashboard</button>
+  <div class="nav-tabs">
+    <button class="tab on" id="tab-mapa"      onclick="setView('mapa',this)">🗺️ Mapa</button>
+    <button class="tab"    id="tab-kanban"    onclick="setView('kanban',this)">⬛ Kanban</button>
+    <button class="tab"    id="tab-colunas"   onclick="setView('colunas',this)">▦ Processos</button>
+    <button class="tab"    id="tab-versoes"   onclick="setView('versoes',this)">🏷️ Versões</button>
+    <button class="tab"    id="tab-flowchart" onclick="setView('flowchart',this)">📊 Fluxograma</button>
+    <button class="tab"    id="tab-dash"      onclick="setView('dash',this)">📊 Dashboard</button>
+    <button class="tab"    id="tab-contatos"  onclick="setView('contatos',this)">👤 Contatos</button>
+  </div>
   <div class="search-wrap">
     <input class="search-inp" id="search-inp" type="text" placeholder="Buscar itens..." oninput="applySearch(this.value)" autocomplete="off">
     <button class="search-clr" onclick="clearSearch()" title="Limpar">x</button>
@@ -489,6 +493,7 @@ svg#fc-svg{display:block;min-width:1400px;min-height:700px;background:var(--bg2)
       <button class="fc-btn" id="ftool-add-link"     onclick="setFTool('add-link')">⬡ Link</button>
       <button class="fc-btn" id="ftool-add-comentario" onclick="setFTool('add-comentario')">💬 Comentário</button>
       <div class="fc-sep"></div>
+      <button class="fc-btn" id="btn-renomear" onclick="fcRenomearSel()">✏️ Renomear</button>
       <button class="fc-btn danger" onclick="fcDelSel()">✕ Apagar</button>
       <span class="fc-st" id="fc-st">Selecione ou crie um fluxo</span>
       <div class="fc-sel-w">
@@ -512,6 +517,17 @@ svg#fc-svg{display:block;min-width:1400px;min-height:700px;background:var(--bg2)
   </div>
 </div>
 
+<!-- CONTATOS -->
+<div id="view-contatos" class="view">
+  <div style="max-width:860px;margin:0 auto;padding:0 4px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-size:15px;font-weight:800;color:var(--text)">👤 Contatos</div>
+      <button class="btn-ok" style="font-size:12px;padding:6px 14px" onclick="ctCancelEdit();openContactModal()">+ Novo Contato</button>
+    </div>
+    <div id="view-contacts-list" style="display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+</div>
+
 <!-- DASHBOARD -->
 <div id="view-dash" class="view">
   <div class="db-wrap">
@@ -520,10 +536,18 @@ svg#fc-svg{display:block;min-width:1400px;min-height:700px;background:var(--bg2)
       <div class="db-section-hdr">Por Especialista</div>
       <div id="db-specialists" class="db-specialists"></div>
     </div>
-    <div class="db-section">
-      <div class="db-section-hdr">Cobertura por Categoria (Concluídos)</div>
-      <div style="display:flex;justify-content:center;align-items:center;padding:16px 0">
-        <canvas id="db-radar" width="380" height="380" style="max-width:380px"></canvas>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px">
+        <div class="db-section-hdr">Concluídos por Categoria</div>
+        <canvas id="db-radar" style="max-width:100%"></canvas>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px">
+        <div class="db-section-hdr">Em Andamento por Categoria</div>
+        <canvas id="db-andamento" style="max-width:100%"></canvas>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px">
+        <div class="db-section-hdr">Backlog por Categoria</div>
+        <canvas id="db-backlog" style="max-width:100%"></canvas>
       </div>
     </div>
     <div class="db-section">
@@ -772,7 +796,7 @@ function buildAssigneeOptions(selectedId){
 function buildContactOptions(selectedId){
   var opts='<option value="">— Nenhum —</option>';
   _contacts.forEach(function(c){
-    var lbl=c.nome+(c.empresa?' ('+c.empresa+')':'');
+    var lbl=c.nome+(c.marca?' ('+c.marca+')':c.bu?' ('+c.bu+')':'');
     opts+='<option value="'+esc(c.id)+'"'+(c.id===selectedId?' selected':'')+'>'+esc(lbl)+'</option>';
   });
   return opts;
@@ -866,6 +890,7 @@ function setView(v,btn){
   if(v==='flowchart'){loadFlowcharts();buildFcLeg();}
   if(v==='mapa') renderMapa();
   if(v==='dash') renderDash();
+  if(v==='contatos') loadUsersAndContacts().then(function(){renderContactsList();renderContactsTab();});
 }
 
 // ── ITEMS ─────────────────────────────────────────────────────────────────────
@@ -1448,7 +1473,7 @@ function mkNodeShape(node){var x=node.x,y=node.y,w=NW[node.type],h=NH[node.type]
   return svgEl('rect',{x:x,y:y,width:w,height:h,rx:4,fill:fill,stroke:stroke,'stroke-width':1.5});
 }
 function setFTool(t){_ftool=t;_fconnFrom=null;document.querySelectorAll('.fc-btn').forEach(function(b){b.classList.remove('on');});var btn=document.getElementById('ftool-'+t);if(btn)btn.classList.add('on');document.getElementById('fc-svg').style.cursor=t.startsWith('add-')?'crosshair':t==='connect'?'cell':'default';document.getElementById('fc-st').textContent=t==='connect'?'Clique no nó origem, depois no destino':t.startsWith('add-')?'Clique no canvas para adicionar':'Arraste · Duplo clique para editar';renderFc();}
-function fcSvgClick(e){if(_fdrag)return;if(!_ftool.startsWith('add-'))return;var type=_ftool.replace('add-',''),p=svgPt(e);var node={id:'n'+Date.now(),type:type,label:NLABEL[type]||type.toUpperCase(),x:Math.max(4,p.x-NW[type]/2),y:Math.max(4,p.y-NH[type]/2)};_fc.nodes.push(node);_fsel=node.id;_fselType='node';renderFc();}
+function fcSvgClick(e){if(_fdrag)return;if(!_ftool.startsWith('add-'))return;var type=_ftool.replace('add-',''),p=svgPt(e);var node={id:'n'+Date.now(),type:type,label:NLABEL[type]||type.toUpperCase(),x:Math.max(4,p.x-NW[type]/2),y:Math.max(4,p.y-NH[type]/2)};_fc.nodes.push(node);_fsel=node.id;_fselType='node';renderFc();if(node.type==='comentario'){openCommentModal(node.id);}else{openLabelModal(node.id);}}
 function fcNodeDown(e,id){e.preventDefault();if(_ftool==='connect'){if(!_fconnFrom){_fconnFrom=id;_fsel=id;_fselType='node';renderFc();var node=_fc.nodes.find(function(n){return n.id===id;});if(node){var cx=node.x+NW[node.type]/2,cy=node.y+NH[node.type]/2;var prev=document.getElementById('fc-prev');prev.setAttribute('x1',cx);prev.setAttribute('y1',cy);prev.setAttribute('x2',cx);prev.setAttribute('y2',cy);prev.style.display='';}}else if(_fconnFrom!==id){if(!_fc.edges.some(function(ed){return ed.from===_fconnFrom&&ed.to===id;}))_fc.edges.push({id:'e'+Date.now(),from:_fconnFrom,to:id,label:''});_fconnFrom=null;_fsel=null;document.getElementById('fc-prev').style.display='none';renderFc();}else{_fconnFrom=null;_fsel=null;document.getElementById('fc-prev').style.display='none';renderFc();}return;}if(_ftool!=='select')return;_fsel=id;_fselType='node';var node=_fc.nodes.find(function(n){return n.id===id;});if(!node)return;var p=svgPt(e);_fdrag={id:id,ox:p.x-node.x,oy:p.y-node.y};renderFc();}
 function fcSvgDown(e){if(e.target===document.getElementById('fc-svg')&&_ftool==='select'){_fsel=null;_fselType=null;renderFc();}}
 function fcSvgMove(e){if(_ftool==='connect'&&_fconnFrom){var p=svgPt(e),prev=document.getElementById('fc-prev');prev.setAttribute('x2',p.x);prev.setAttribute('y2',p.y);}if(!_fdrag)return;var p=svgPt(e),node=_fc.nodes.find(function(n){return n.id===_fdrag.id;});if(node){node.x=Math.max(0,p.x-_fdrag.ox);node.y=Math.max(0,p.y-_fdrag.oy);renderFc();}}
@@ -1457,6 +1482,13 @@ function fcSvgUp(){
   _fdrag=null;
 }
 function fcDelSel(){if(_fselType==='node'){_fc.nodes=_fc.nodes.filter(function(n){return n.id!==_fsel;});_fc.edges=_fc.edges.filter(function(e){return e.from!==_fsel&&e.to!==_fsel;});}else if(_fselType==='edge'){_fc.edges=_fc.edges.filter(function(e){return e.id!==_fsel;});}_fsel=null;_fselType=null;renderFc();}
+function fcRenomearSel(){
+  if(_ftool!=='select'){setFTool('select');document.getElementById('fc-st').textContent='Agora clique no elemento e depois em Renomear.';return;}
+  if(!_fsel){document.getElementById('fc-st').textContent='Clique em um nó para selecioná-lo, depois clique Renomear.';return;}
+  var node=_fc&&_fc.nodes?_fc.nodes.find(function(n){return n.id===_fsel;}):null;
+  if(!node){document.getElementById('fc-st').textContent='Selecione um nó (não uma seta).';return;}
+  if(node.type==='comentario'){openCommentModal(node.id);}else{openLabelModal(node.id);}
+}
 async function loadFlowcharts(){if(!_pid)return;_fcs=await api('GET','/api/flowcharts?project='+_pid);var sel=document.getElementById('fc-sel'),cur=sel.value;sel.innerHTML='<option value="">— Selecione —</option>';_fcs.forEach(function(fc){var o=document.createElement('option');o.value=fc.id;o.textContent=fc.name;sel.appendChild(o);});if(cur)sel.value=cur;}
 function fcLoad(id){if(!id){_fc={id:null,name:'',nodes:[],edges:[]};renderFc();return;}var fc=_fcs.find(function(f){return f.id===id;});if(fc){_fc=JSON.parse(JSON.stringify(fc));_fsel=null;_fconnFrom=null;renderFc();}}
 async function fcNew(){var name=prompt('Nome:');if(!name)return;var saved=await api('POST','/api/flowcharts',{name:name,nodes:[],edges:[],project_id:_pid});_fcs.push(saved);_fc=JSON.parse(JSON.stringify(saved));var sel=document.getElementById('fc-sel'),o=document.createElement('option');o.value=saved.id;o.textContent=saved.name;sel.appendChild(o);sel.value=saved.id;_fsel=null;renderFc();}
@@ -1642,9 +1674,31 @@ function renderDash(){
   var canvas = document.getElementById('db-radar');
   if(!canvas) return;
 
-  if(window._radarChart) { window._radarChart.destroy(); }
+  if(window._radarChart)    { window._radarChart.destroy();    window._radarChart=null; }
+  if(window._andamentoChart){ window._andamentoChart.destroy(); window._andamentoChart=null; }
+  if(window._backlogChart)  { window._backlogChart.destroy();   window._backlogChart=null; }
 
   if(typeof Chart === 'undefined') return;
+
+  var radarOpts = function(color){return {responsive:true,plugins:{legend:{display:false}},scales:{r:{ticks:{display:false,stepSize:1},grid:{color:'rgba(255,255,255,0.06)'},pointLabels:{color:'#94a3b8',font:{size:10}},beginAtZero:true}}};};
+
+  // ── Radar Concluídos ────────────────────────────────────────────────────
+  var concluidos = items.filter(function(i){return i.status==='concluido';});
+  var radarConc  = CATS.map(function(cat){return concluidos.filter(function(i){return i.categoria===cat;}).length;});
+  var cConc=document.getElementById('db-radar');
+  if(cConc)window._radarChart=new Chart(cConc,{type:'radar',data:{labels:CATS,datasets:[{label:'Concluídos',data:radarConc,backgroundColor:'rgba(34,197,94,0.15)',borderColor:'rgba(34,197,94,0.9)',borderWidth:2,pointBackgroundColor:'rgba(34,197,94,0.9)',pointRadius:4}]},options:radarOpts('green')});
+
+  // ── Radar Em Andamento ──────────────────────────────────────────────────
+  var andItems  = items.filter(function(i){return i.status==='andamento'||i.status==='revisao';});
+  var radarAnd  = CATS.map(function(cat){return andItems.filter(function(i){return i.categoria===cat;}).length;});
+  var cAnd=document.getElementById('db-andamento');
+  if(cAnd)window._andamentoChart=new Chart(cAnd,{type:'radar',data:{labels:CATS,datasets:[{label:'Andamento',data:radarAnd,backgroundColor:'rgba(34,211,238,0.15)',borderColor:'rgba(34,211,238,0.9)',borderWidth:2,pointBackgroundColor:'rgba(34,211,238,0.9)',pointRadius:4}]},options:radarOpts('cyan')});
+
+  // ── Radar Backlog ────────────────────────────────────────────────────────
+  var bklItems  = items.filter(function(i){return i.status==='backlog';});
+  var radarBkl  = CATS.map(function(cat){return bklItems.filter(function(i){return i.categoria===cat;}).length;});
+  var cBkl=document.getElementById('db-backlog');
+  if(cBkl)window._backlogChart=new Chart(cBkl,{type:'radar',data:{labels:CATS,datasets:[{label:'Backlog',data:radarBkl,backgroundColor:'rgba(100,116,139,0.15)',borderColor:'rgba(100,116,139,0.8)',borderWidth:2,pointBackgroundColor:'rgba(100,116,139,0.8)',pointRadius:4}]},options:radarOpts('muted')});
 
   window._radarChart = new Chart(canvas, {
     type: 'radar',
@@ -1701,8 +1755,8 @@ function renderDash(){
 
 // ── CONTACTS ──────────────────────────────────────────────────────────────────
 function openContactModal(){
-  _contacts.length||loadUsersAndContacts();
-  renderContactsList();
+  if(!_contacts.length) loadUsersAndContacts().then(function(){renderContactsList();renderContactsTab();});
+  else renderContactsList();
   ctCancelEdit();
   document.getElementById('ov-contacts').classList.remove('hide');
 }
@@ -1720,7 +1774,7 @@ function renderContactsList(){
     row.innerHTML='<div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--amber),var(--blue));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0">'+esc(ini)+'</div>'
       +'<div style="flex:1;min-width:0">'
         +'<div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(c.nome)+'</div>'
-        +'<div style="font-size:10px;color:var(--muted)">'+esc([c.cargo,c.empresa].filter(Boolean).join(' · '))+'</div>'
+        +'<div style="font-size:10px;color:var(--muted)">'+esc([c.cargo,c.marca,c.bu].filter(Boolean).join(' · '))+'</div>'
         +(c.email?'<div style="font-size:10px;color:var(--muted2)">'+esc(c.email)+(c.telefone?' · '+esc(c.telefone):'')+'</div>':'')
       +'</div>'
       +'<button data-cid="'+esc(c.id)+'" onclick="ctEdit(this.dataset.cid)" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;padding:3px">✏️</button>'
@@ -1731,29 +1785,38 @@ function renderContactsList(){
 function ctCancelEdit(){
   document.getElementById('ct-id').value='';
   document.getElementById('ct-nome').value='';
-  document.getElementById('ct-empresa').value='';
+  document.getElementById('ct-bu').value='';
+  document.getElementById('ct-marca').value='';
+  document.getElementById('ct-setor').value='';
   document.getElementById('ct-cargo').value='';
   document.getElementById('ct-telefone').value='';
   document.getElementById('ct-email').value='';
   document.getElementById('ct-form-title').textContent='Novo Contato';
+  var cb=document.getElementById('ct-cancel-btn'); if(cb)cb.style.display='none';
 }
 function ctEdit(id){
   var c=_contacts.find(function(x){return x.id===id;}); if(!c)return;
   document.getElementById('ct-id').value=c.id;
   document.getElementById('ct-nome').value=c.nome||'';
-  document.getElementById('ct-empresa').value=c.empresa||'';
+  document.getElementById('ct-bu').value=c.bu||'';
+  document.getElementById('ct-marca').value=c.marca||'';
+  document.getElementById('ct-setor').value=c.setor||'';
   document.getElementById('ct-cargo').value=c.cargo||'';
   document.getElementById('ct-telefone').value=c.telefone||'';
   document.getElementById('ct-email').value=c.email||'';
   document.getElementById('ct-form-title').textContent='Editar Contato';
+  var cb=document.getElementById('ct-cancel-btn'); if(cb)cb.style.display='';
   document.getElementById('ct-nome').focus();
+  openContactModal();
 }
 async function ctSave(){
   var nome=document.getElementById('ct-nome').value.trim();
   if(!nome){alert('Nome obrigatório');return;}
   var payload={
     nome:nome,
-    empresa:document.getElementById('ct-empresa').value.trim(),
+    bu:document.getElementById('ct-bu').value.trim(),
+    marca:document.getElementById('ct-marca').value.trim(),
+    setor:document.getElementById('ct-setor').value.trim(),
     cargo:document.getElementById('ct-cargo').value.trim(),
     telefone:document.getElementById('ct-telefone').value.trim(),
     email:document.getElementById('ct-email').value.trim()
@@ -1769,6 +1832,7 @@ async function ctSave(){
   }
   ctCancelEdit();
   renderContactsList();
+  renderContactsTab();
   // Refresh dropdowns in item modal if open
   var fSol=document.getElementById('f-solicitante');
   var fFon=document.getElementById('f-fonte');
@@ -1780,6 +1844,26 @@ async function ctDelete(id){
   await api('DELETE','/api/contacts/'+id);
   _contacts=_contacts.filter(function(c){return c.id!==id;});
   renderContactsList();
+  renderContactsTab();
+}
+function renderContactsTab(){
+  var wrap=document.getElementById('view-contacts-list'); if(!wrap)return;
+  wrap.innerHTML='';
+  if(!_contacts.length){wrap.innerHTML='<div style="font-size:12px;color:var(--muted);text-align:center;padding:32px">Nenhum contato cadastrado. Clique em "+ Novo Contato" para adicionar.</div>';return;}
+  _contacts.forEach(function(c){
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 14px';
+    var ini=(c.nome||'?').split(' ').slice(0,2).map(function(w){return w[0]?w[0].toUpperCase():'';}).join('');
+    row.innerHTML='<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--amber),var(--blue));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">'+esc(ini)+'</div>'
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:13px;font-weight:700">'+esc(c.nome)+'</div>'
+        +'<div style="font-size:11px;color:var(--muted)">'+esc([c.cargo,c.marca,c.bu].filter(Boolean).join(' · '))+'</div>'
+        +(c.email?'<div style="font-size:11px;color:var(--muted2)">'+esc(c.email)+(c.telefone?' · '+esc(c.telefone):'')+'</div>':'')
+      +'</div>'
+      +'<button data-cid="'+esc(c.id)+'" onclick="ctEdit(this.dataset.cid)" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;padding:4px" title="Editar">✏️</button>'
+      +(isAdmin()?'<button data-cid="'+esc(c.id)+'" onclick="ctDelete(this.dataset.cid)" style="background:none;border:none;cursor:pointer;color:var(--red);font-size:14px;padding:4px" title="Apagar">✕</button>':'');
+    wrap.appendChild(row);
+  });
 }
 
 // ── KEYBOARD ──────────────────────────────────────────────────────────────────
@@ -1997,6 +2081,34 @@ async function runSeedDiff(){
 
 </script>
 
+<!-- ══ FC LABEL MODAL ════════════════════════════════════════════════════ -->
+<div class="ov hide" id="ov-fc-label" onclick="if(event.target===this)closeLabelModal()">
+  <div class="modal" style="max-width:400px">
+    <h2>✏️ Renomear Elemento</h2>
+    <input type="text" id="fc-label-input" placeholder="Nome do elemento" style="width:100%;margin-bottom:14px"
+      onkeydown="if(event.key==='Enter')saveLabelEdit();if(event.key==='Escape')closeLabelModal()">
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn-cancel" onclick="closeLabelModal()">Cancelar</button>
+      <button class="btn-ok" onclick="saveLabelEdit()">Salvar</button>
+    </div>
+    <button class="close-btn" onclick="closeLabelModal()">✕</button>
+  </div>
+</div>
+
+<!-- ══ COMMENT MODAL ════════════════════════════════════════════════════ -->
+<div class="ov hide" id="ov-comment" onclick="if(event.target===this)closeCommentModal()">
+  <div class="modal" style="max-width:420px">
+    <h2>💬 Comentário</h2>
+    <textarea id="comment-text" rows="5" placeholder="Digite o comentário..." style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);padding:9px 12px;font-size:13px;resize:vertical;margin-bottom:14px"
+      onkeydown="if((event.metaKey||event.ctrlKey)&&event.key==='Enter')saveCommentEdit()"></textarea>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn-cancel" onclick="closeCommentModal()">Cancelar</button>
+      <button class="btn-ok" onclick="saveCommentEdit()">Salvar</button>
+    </div>
+    <button class="close-btn" onclick="closeCommentModal()">✕</button>
+  </div>
+</div>
+
 <!-- ══ SEEDS MODAL ══════════════════════════════════════════════════════ -->
 <div class="ov hide" id="ov-seeds" onclick="if(event.target===this)closeSeedModal()">
   <div class="modal" style="max-width:660px">
@@ -2013,58 +2125,96 @@ async function runSeedDiff(){
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <div style="flex:1;min-width:160px">
             <label>Especialista <span style="color:var(--muted)">(ex: João)</span></label>
-            <input type="text" id="seed-especialista" placeholder="Nome do especialista" style="margin-top:5px">
+            <input type="text" id="seed-especialista" placeholder="Nome do especialista" style="margin-top:4px">
           </div>
           <div style="flex:1;min-width:160px">
-            <label>Nome do seed <span style="color:var(--muted)">(auto)</span></label>
-            <input type="text" id="seed-nome" placeholder="SEED_ESP_JAN.26" style="margin-top:5px">
-          </div>        </div>
-        <div>
-          <label style="margin-bottom:4px;display:block">O que fazer com os itens inacabados?</label>
-          <div class="radio-row">
-            <label><input type="radio" name="seed-inacab" value="levar" checked> ✅ Levar para o próximo período (ficam no sistema)</label>
-            <label><input type="radio" name="seed-inacab" value="descartar"> 🗑️ Não levar (limpa itens inacabados)</label>
+            <label>Nome do Seed</label>
+            <input type="text" id="seed-nome" placeholder="SEED_NOME_MES.ANO" style="margin-top:4px">
           </div>
         </div>
-        <div style="display:flex;gap:8px;margin-top:4px">
-          <button class="btn-ok" style="flex:1" onclick="seedCriarApenas()">💾 Salvar seed (sem fechar)</button>
-          <button class="btn-ok" style="flex:1;background:linear-gradient(135deg,#f97316,#ef4444)" onclick="seedFechar()">📦 Fechar período e salvar</button>
+        <div style="margin-top:8px">
+          <label style="font-size:11px;color:var(--muted)">Opção ao fechar projeto:</label>
+          <div style="display:flex;gap:12px;margin-top:4px;flex-wrap:wrap">
+            <label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="fechar-opt" value="fechar"> Fechar projeto</label>
+            <label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="fechar-opt" value="arquivar"> Arquivar projeto</label>
+            <label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="radio" name="fechar-opt" value="nenhum" checked> Só criar seed</label>
+          </div>
+          <label style="font-size:12px;display:flex;align-items:center;gap:6px;margin-top:6px">
+            <input type="checkbox" id="seed-levar-inacab"> Levar itens inacabados para novo projeto
+          </label>
         </div>
-        <p id="seed-msg" style="font-size:11px;color:var(--green);margin-top:2px;display:none"></p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+          <button class="btn-ok" onclick="criarSeed()">💾 Criar Seed</button>
+          <button class="btn-cancel" onclick="closeSeedModal()">Cancelar</button>
+        </div>
       </div>
-    </div>
-
-    <!-- TAB: COMPARAR -->
-    <div id="seed-pane-diff" style="display:none">
-      <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:12px;flex-wrap:wrap">
-        <div style="flex:1;min-width:140px">
-          <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:4px">Seed A (antes)</div>
-          <select id="diff-seed-a" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:6px 10px;font-size:12px"></select>
-        </div>
-        <div style="font-size:18px;color:var(--muted);padding-bottom:4px">to</div>
-        <div style="flex:1;min-width:140px">
-          <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:4px">Seed B (depois)</div>
-          <select id="diff-seed-b" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:6px 10px;font-size:12px"></select>
-        </div>
-        <button class="btn-ok" onclick="runSeedDiff()" style="flex-shrink:0;padding:7px 16px">Comparar</button>
-      </div>
-      <div id="diff-result" style="max-height:360px;overflow-y:auto"></div>
     </div>
 
     <!-- TAB: SEEDS SALVOS -->
     <div id="seed-pane-seeds" style="display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="font-size:11px;color:var(--muted)">Lista em cache — atualize para buscar do SharePoint</span>
-        <button id="btn-sp-refresh" class="btn-ok" style="font-size:11px;padding:4px 10px"
-          onclick="refreshSeedsFromSP()">↺ Atualizar do SharePoint</button>
-      </div>
-      <div id="seed-list-wrap" class="seed-list">
-        <p style="color:var(--muted);font-size:13px;padding:10px">Carregando...</p>
-      </div>
+      <div id="seeds-lista" style="max-height:380px;overflow-y:auto"></div>
     </div>
 
-    <div class="modal-btns" style="margin-top:16px">
-      <button class="btn-cancel" onclick="closeSeedModal()">Fechar</button>
+    <!-- TAB: COMPARAR -->
+    <div id="seed-pane-diff" style="display:none">
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+        <select id="diff-seed-a" style="flex:1;background:var(--bg2);border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:6px 8px;font-size:12px"><option value="">Seed A</option></select>
+        <select id="diff-seed-b" style="flex:1;background:var(--bg2);border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:6px 8px;font-size:12px"><option value="">Seed B</option></select>
+        <button class="btn-ok" style="font-size:12px;padding:6px 14px" onclick="runSeedDiff()">Comparar</button>
+      </div>
+      <div id="seed-diff-result" style="max-height:340px;overflow-y:auto"></div>
     </div>
+
+    <button class="close-btn" onclick="closeSeedModal()">✕</button>
   </div>
 </div>
+
+<!-- ══ CONTACTS MODAL ══════════════════════════════════════════════════ -->
+<div class="ov hide" id="ov-contacts" onclick="if(event.target===this)closeContactModal()">
+  <div class="modal" style="max-width:580px">
+    <h2>👤 Contatos</h2>
+    <div id="contacts-list" style="max-height:280px;overflow-y:auto;margin-bottom:12px"></div>
+    <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:14px">
+      <div style="font-size:12px;font-weight:800;color:var(--cyan);margin-bottom:10px" id="ct-form-title">Novo Contato</div>
+      <input type="hidden" id="ct-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="grid-column:1/-1">
+          <label style="font-size:11px;color:var(--muted);font-weight:700">Nome *</label>
+          <input type="text" id="ct-nome" placeholder="Nome completo" style="margin-top:3px;width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:6px 9px;font-size:12px">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-weight:700">BU</label>
+          <input type="text" id="ct-bu" placeholder="Business Unit" style="margin-top:3px;width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:6px 9px;font-size:12px">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-weight:700">Marca</label>
+          <input type="text" id="ct-marca" placeholder="Marca" style="margin-top:3px;width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:6px 9px;font-size:12px">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-weight:700">Setor</label>
+          <input type="text" id="ct-setor" placeholder="Setor" style="margin-top:3px;width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:6px 9px;font-size:12px">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-weight:700">Cargo</label>
+          <input type="text" id="ct-cargo" placeholder="Cargo" style="margin-top:3px;width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:6px 9px;font-size:12px">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-weight:700">Telefone</label>
+          <input type="text" id="ct-telefone" placeholder="(00) 00000-0000" style="margin-top:3px;width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:6px 9px;font-size:12px">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-weight:700">E-mail</label>
+          <input type="text" id="ct-email" placeholder="email@empresa.com" style="margin-top:3px;width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:7px;color:var(--text);padding:6px 9px;font-size:12px">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end">
+        <button class="btn-cancel" onclick="ctCancelEdit()" id="ct-cancel-btn" style="display:none">Cancelar</button>
+        <button class="btn-ok" onclick="ctSave()">Salvar Contato</button>
+      </div>
+    </div>
+    <button class="close-btn" onclick="closeContactModal()">✕</button>
+  </div>
+</div>
+
+</body>
+</html>
