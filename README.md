@@ -146,6 +146,3 @@ Rotas sensíveis possuem limite de requisições por IP:
 
 ---
 
-## Licença
-
-Uso interno. Todos os direitos reservados.
